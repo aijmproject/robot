@@ -3,7 +3,7 @@
 import numpy as np
 import cv2 #pip install opencv-python
 import dlib #conda install -c conda-forge dlib
-xml_path = 'C:/Users/kibas/AppData/Local/Programs/Python/Python38-32/Lib/site-packages/cv2/data/'
+xml_path = 'opencv_models/'
 face_cascade = cv2.CascadeClassifier(xml_path+'haarcascade_frontalface_alt2.xml')
 eye_cascade = cv2.CascadeClassifier(xml_path+'haarcascade_eye.xml')
 detector = dlib.get_frontal_face_detector()
