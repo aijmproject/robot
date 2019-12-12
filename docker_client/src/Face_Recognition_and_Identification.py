@@ -7,6 +7,7 @@ import dlib
 import json
 from client_db_api.surveillance_db_api import SurveillanceDbCreator
 from face_comparator import FaceComparator
+from module_text_to_speech import TextToSpeech
 
 cap = cv2.VideoCapture(0)
 
@@ -15,6 +16,7 @@ predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
 surveillance = SurveillanceDbCreator()
 faceComparator = FaceComparator()
+textToSpeech = TextToSpeech()
 while True:
     _, frame = cap.read()
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -43,10 +45,9 @@ while True:
             results =  faceComparator.face_distance(np.asarray(item['landmarks']),np.asarray(landmarks_input))
             print(results)
             if results[0] == True:
-                print("Bonjour", item['name'])
+                textToSpeech.speak("Bonjour "+ item['name'])
             else:
-                print("Désolé, je ne vous reconnais pas!")
-                
+                textToSpeech.speak("Désolé, je ne vous reconnais pas!")
             break
 
         break    
