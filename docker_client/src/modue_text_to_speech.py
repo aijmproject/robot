@@ -4,7 +4,8 @@ directory with this command: python TTSSample.py
 '''
 import os, requests, time
 from xml.etree import ElementTree
-
+import soundfile as sf
+from audio_player import AudioPlayer
 # This code is required for Python 2.7
 try: input = raw_input
 except NameError: pass
@@ -30,6 +31,7 @@ class TextToSpeech(object):
         self.tts = input("What would you like to convert to speech: ")
         self.timestr = time.strftime("%Y%m%d-%H%M")
         self.access_token = None
+        self.audioPlayer =  AudioPlayer()
 
     '''
     The TTS endpoint requires an access token. This method exchanges your
@@ -68,8 +70,11 @@ class TextToSpeech(object):
         includes the date.
         '''
         if response.status_code == 200:
-            with open('sample-' + self.timestr + '.wav', 'wb') as audio:
+            filename = 'sample-' + self.timestr + '.wav'
+            with open(filename, 'wb') as audio:
                 audio.write(response.content)
+                #data, fs = sf.read(response.content)
+                self.audioPlayer.play(filename)
                 print("\nStatus code: " + str(response.status_code) + "\nYour TTS is ready for playback.\n")
         else:
             print("\nStatus code: " + str(response.status_code) + "\nSomething went wrong. Check your subscription key and headers.\n")
