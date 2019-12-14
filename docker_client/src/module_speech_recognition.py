@@ -1,12 +1,3 @@
-#import speech_recognition as sr
-#sr.__version__
-#r = sr.Recognizer()
-#harvard = sr.AudioFile('harvard.wav')
-#with harvard as source:
-#    audio = r.record(source)
-#    print(type(audio))
-#    print(r.recognize_google(audio))
-
 import azure.cognitiveservices.speech as speechsdk
 
 
