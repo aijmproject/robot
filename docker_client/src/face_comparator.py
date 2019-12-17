@@ -2,7 +2,7 @@ import numpy as np
 
 class FaceComparator:
     
-    def face_distance(self, face_encodings, face_to_compare, tolerance = 60):
+    def face_distance(self, face_encodings, face_to_compare, tolerance = 40):
         """
         Given a list of face encodings, compare them to a known face encoding and get a euclidean distance
         for each comparison face. The distance tells you how similar the faces are.
@@ -13,5 +13,5 @@ class FaceComparator:
         if len(face_encodings) == 0:
             return np.empty((0))
         #print("tolerance:", tolerance)
-        print("values :", np.linalg.norm(face_encodings - face_to_compare, axis=1) )
+        #print("values :", np.linalg.norm(face_encodings - face_to_compare, axis=1) )
         return list(np.linalg.norm(face_encodings - face_to_compare, axis=1) <= tolerance)
