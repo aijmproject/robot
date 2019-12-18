@@ -1,4 +1,0 @@
-python Identification\CreateProfile.py b4736e77574f48fe802b55364a2b2e44
-python Identification\PrintAllProfiles.py b4736e77574f48fe802b55364a2b2e44
-python Identification\EnrollProfile.py b4736e77574f48fe802b55364a2b2e44 9da356c7-76e9-4f30-a2c6-c84f332a237b Identification\junior.record.wav true
-python Identification\IdentifyFile.py b4736e77574f48fe802b55364a2b2e44 Identification\junior.record.wav 9da356c7-76e9-4f30-a2c6-c84f332a237b
