@@ -10,10 +10,16 @@ from collections import Counter
 
 class SpeechToTextMakerGoogle:
 
-    def get_text(self):
+    def get_text_by_speech(self):
         recognizer = sr.Recognizer()
         mic = sr.Microphone(device_index=1)
         return self._recognize_speech_from_mic(recognizer, mic)
+
+    def get_text_by_audio(self, audiofile):
+        recognizer = sr.Recognizer()
+        with sr.WavFile(audiofile) as source:              # use "test.wav" as the audio source
+            audio = recognizer.record(source) 
+        return self._recognize_speech_from_audio(recognizer,audio)
 
     def _recognize_speech_from_mic(self, recognizer, microphone):
         """Transcribe speech from recorded from `microphone`.
@@ -38,6 +44,10 @@ class SpeechToTextMakerGoogle:
         with microphone as source:
             recognizer.adjust_for_ambient_noise(source) # #  analyze the audio source for 1 second
             audio = recognizer.listen(source)
+        
+        return self._recognize_speech_from_audio(recognizer,audio)
+
+    def _recognize_speech_from_audio(self,recognizer, audiofile):
 
         # set up the response object
         response = {
@@ -50,7 +60,7 @@ class SpeechToTextMakerGoogle:
         # if a RequestError or UnknownValueError exception is caught,
         #   update the response object accordingly
         try:
-            response["transcription"] = recognizer.recognize_google(audio, language="fr-FR")
+            response["transcription"] = recognizer.recognize_google(audiofile, language="fr-FR")
         except sr.RequestError:
             # API was unreachable or unresponsive
             response["success"] = False
@@ -60,6 +70,8 @@ class SpeechToTextMakerGoogle:
             response["error"] = "Unable to recognize speech"
 
         return response
+
+
 
 
 if __name__ == "__main__":
