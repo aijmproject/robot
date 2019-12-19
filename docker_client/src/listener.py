@@ -69,6 +69,7 @@ class Listener:
                         voice_recorder_file_16k = voice_recorder_file + ".16k.wav"
                         #self.audioDownSampler.downsampleWav(voice_recorder_file, voice_recorder_file_16k)
                         
+                        #https://stackoverflow.com/questions/30619740/downsampling-wav-audio-file
                         y, s = librosa.load(voice_recorder_file, sr=8000)
                         librosa.output.write_wav(voice_recorder_file_16k, y, s)#convert to pcm format
                         files_to_delete.append(voice_recorder_file_16k)
