@@ -6,13 +6,13 @@ from tempfile import NamedTemporaryFile
 from client_db_api.surveillance_db_api import SurveillanceDbCreator
 from identify_file import IdentifyFile
 from audio_downsampling import AudioDownSampler
+from response_random_provider import ResponseRandomProvider
 #import IdentificationServiceHttpClientHelper
 import sys, traceback
 import os
 import threading
 import random
 import string
-import librosa  
 class Listener:
     def __init__(self):
         self.speechtotextmaker = SpeechToTextMakerGoogle()
@@ -22,6 +22,8 @@ class Listener:
         self.surveillanceDb = SurveillanceDbCreator()
         self.identifyFile = IdentifyFile()
         self.audioDownSampler = AudioDownSampler()
+        self.reponseRandomProvider = ResponseRandomProvider()
+        self.empty_profile_id = "00000000-0000-0000-0000-000000000000"
 
         self.subscription_key = "b4736e77574f48fe802b55364a2b2e44"
         self.srobot = "s robot"
@@ -60,25 +62,25 @@ class Listener:
                     command_code = self.command_mapper.get_code_by_text(command_text)
 
                     if command_code == -1:
-                        self.textToSpeech.speak("Désolé, je n'ai pas compris la commande")
+                        self.textToSpeech.speak(self.reponseRandomProvider.not_undestand_command())
                     else:
                         #speaker identification by voice
                         user_profile_ids = [item["mcs_sr_profile_id"] for item in self.surveillanceDb.get_all_users()]
                         #user.mcs_sr_profile_id : microsoft cognitive service speaker recognition profile id 
                         #voice_recorder_result : audio wav file created
                         voice_recorder_file_16k = voice_recorder_file + ".16k.wav"
-                        #self.audioDownSampler.downsampleWav(voice_recorder_file, voice_recorder_file_16k)
                         
-                        #https://stackoverflow.com/questions/30619740/downsampling-wav-audio-file
-                        y, s = librosa.load(voice_recorder_file, sr=8000)
-                        librosa.output.write_wav(voice_recorder_file_16k, y, s)#convert to pcm format
+                        convert_command = 'ffmpeg -i ' + voice_recorder_file + ' -acodec pcm_s16le -ar 16000 -ac 1 ' + voice_recorder_file_16k
+                        os.system(convert_command)
+
                         files_to_delete.append(voice_recorder_file_16k)
                         
                         verified_user_profile_id = self.identifyFile.identify_file(self.subscription_key,voice_recorder_file_16k,"true",user_profile_ids)
-                        if verified_user_profile_id == "00000000-0000-0000-0000-000000000000":
-                            self.textToSpeech.speak("Désolé, vous n'avez pas le droit nécessaire")
+                        if verified_user_profile_id == self.empty_profile_id:
+                            self.textToSpeech.speak(self.reponseRandomProvider.no_access_right())
                         else:
                             self.textToSpeech.speak("Chargement du module demandé")
+                            break
                     #break
             except Exception as e:
                 print(e)
