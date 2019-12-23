@@ -87,6 +87,8 @@ class Listener:
                 traceback.print_exc(file=sys.stdout)
             finally:
                 #delete recorded wave file
+                #https://stackoverflow.com/questions/1196074/how-to-start-a-background-process-in-python
+                #execuyte this in background process
                 for file in files_to_delete:
                     if os.path.isfile(file):
                         os.remove(file)
