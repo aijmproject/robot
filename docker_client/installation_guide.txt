@@ -1,5 +1,6 @@
 sudo pip3 install --upgrade speechrecognition
 sudo apt-get install portaudio19-dev
 sudo python -m pip install pyaudio
-ou
+or
 sudo apt-get install python3-pyaudio
+python3 -m pip install pymongo
