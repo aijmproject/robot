@@ -10,3 +10,8 @@ python3 -m pip install pymongo
 -----------------How to setup Bluetooth on a Raspberry Pi----------------
 sudo apt-get install bluetooth bluez blueman
 sudo reboot
+
+
+---------------How To Install "webcamoid" Package on Ubuntu----------------
+sudo apt-get update -y
+sudo apt-get install -y webcamoid
