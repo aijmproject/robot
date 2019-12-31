@@ -5,3 +5,8 @@ sudo python -m pip install pyaudio
 or
 sudo apt-get install python3-pyaudio
 python3 -m pip install pymongo
+
+
+-----------------How to setup Bluetooth on a Raspberry Pi----------------
+sudo apt-get install bluetooth bluez blueman
+sudo reboot
