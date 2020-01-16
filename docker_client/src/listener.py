@@ -3,7 +3,9 @@ from text_command_mapper import TextCommandMapper
 from module_text_to_speech import TextToSpeech
 from audio_recorder import AudioRecorder
 from tempfile import NamedTemporaryFile
-from client_db_api.surveillance_db_api import SurveillanceDbCreator
+from client_db_api.surveillance_db_api import SurveillanceDbAPI
+from system_mode_manager import SystemModeManager 
+from module_manager import ModuleManager
 from identify_file import IdentifyFile
 from audio_downsampling import AudioDownSampler
 from response_random_provider import ResponseRandomProvider
@@ -13,13 +15,15 @@ import os
 import threading
 import random
 import string
+from utils import GlobalUtils
 class Listener:
     def __init__(self):
         self.speechtotextmaker = SpeechToTextMakerGoogle()
         self.command_mapper = TextCommandMapper()
+        self.moduleManager = ModuleManager()
         self.textToSpeech = TextToSpeech()
         self.audioRecorder = AudioRecorder()
-        self.surveillanceDb = SurveillanceDbCreator()
+        self.surveillanceDb = SurveillanceDbAPI()
         self.identifyFile = IdentifyFile()
         self.audioDownSampler = AudioDownSampler()
         self.reponseRandomProvider = ResponseRandomProvider()
@@ -31,18 +35,23 @@ class Listener:
 
         self._speech_to_text_result = None
         self.voice_recorder_result = None
-
-    def _randomString(self,stringLength=10):
-        """Generate a random string of fixed length """
-        letters = string.ascii_lowercase
-        return ''.join(random.choice(letters) for i in range(stringLength))
     
-    def listen(self):
+    def launch_specific_task(self):
+        print("nothing")
+
+    def check(self):
         files_to_delete = []
         while True:
             try:
+
+                if self.moduleManager.change_module() == True:
+                    self.moduleManager.load_module()
+                    break
+                
+                self.launch_specific_task() #ovveride by derived classes
+
                 print("_voice_recorder...")
-                voice_recorder_file = self._randomString() + ".wav"
+                voice_recorder_file = GlobalUtils.randomString() + ".wav"
                 self.audioRecorder.record_to_file(voice_recorder_file)
                 files_to_delete.append(voice_recorder_file)
 
@@ -80,6 +89,7 @@ class Listener:
                             self.textToSpeech.speak(self.reponseRandomProvider.no_access_right())
                         else:
                             self.textToSpeech.speak("Chargement du module demandé")
+                            self.moduleManager.switch_to_module(command_code)
                             break
                     #break
             except Exception as e:
@@ -98,7 +108,7 @@ class Listener:
 if __name__ == "__main__":
     app  = Listener()
     print("à l'écoute")
-    app.listen()
+    app.check()
 
                     
 

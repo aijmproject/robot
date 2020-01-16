@@ -10,7 +10,7 @@ import dlib
 import json
 import operator
 # other py file 
-from client_db_api.surveillance_db_api import SurveillanceDbCreator
+from client_db_api.surveillance_db_api import SurveillanceDbAPI
 from face_comparator import FaceComparator
 from module_text_to_speech import TextToSpeech
 
@@ -43,7 +43,7 @@ cap = cv2.VideoCapture(0)
 detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
-surveillance = SurveillanceDbCreator()
+surveillance = SurveillanceDbAPI()
 faceComparator = FaceComparator()
 textToSpeech = TextToSpeech()
 while True:
