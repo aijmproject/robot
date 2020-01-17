@@ -6,6 +6,9 @@ sudo python -m pip install pyaudio
 or
 sudo apt-get install python3-pyaudio
 python3 -m pip install pymongo
+ou 
+pip install pipwin
+pipwin install pyaudio
 
 
 -----------------How to setup Bluetooth on a Raspberry Pi----------------
@@ -20,3 +23,6 @@ sudo apt-get install -y webcamoid
 
 ---------------How install PIR controller----------------------
 pip install RPi.GPIO  
+
+
+
