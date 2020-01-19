@@ -4,11 +4,10 @@ from module_text_to_speech import TextToSpeech
 from audio_recorder import AudioRecorder
 from tempfile import NamedTemporaryFile
 from client_db_api.surveillance_db_api import SurveillanceDbAPI
-from system_mode_manager import SystemModeManager 
-from module_manager import ModuleManager
 from identify_file import IdentifyFile
 from audio_downsampling import AudioDownSampler
 from response_random_provider import ResponseRandomProvider
+from system_mode_manager import SystemModeManager 
 #import IdentificationServiceHttpClientHelper
 import sys, traceback
 import os
@@ -20,13 +19,13 @@ class Listener:
     def __init__(self):
         self.speechtotextmaker = SpeechToTextMakerGoogle()
         self.command_mapper = TextCommandMapper()
-        self.moduleManager = ModuleManager()
         self.textToSpeech = TextToSpeech()
         self.audioRecorder = AudioRecorder()
         self.surveillanceDb = SurveillanceDbAPI()
         self.identifyFile = IdentifyFile()
         self.audioDownSampler = AudioDownSampler()
         self.reponseRandomProvider = ResponseRandomProvider()
+        self.systemModeManager = SystemModeManager()
         self.empty_profile_id = "00000000-0000-0000-0000-000000000000"
 
         self.subscription_key = "b4736e77574f48fe802b55364a2b2e44"
@@ -35,20 +34,22 @@ class Listener:
 
         self._speech_to_text_result = None
         self.voice_recorder_result = None
+
+        self.code = 0
     
     def launch_specific_task(self):
-        print("nothing")
+        print("******nothing*******")
 
     def check(self):
         files_to_delete = []
         while True:
             try:
-
-                if self.moduleManager.change_module() == True:
-                    self.moduleManager.load_module()
-                    break
                 
-                self.launch_specific_task() #ovveride by derived classes
+                #check if current database value for current module changed then quit
+                if self.systemModeManager.is_current_mode() == False:
+                    return self.systemModeManager.get_current_mode()
+                
+                self.launch_specific_task() #override by derived classes
 
                 print("_voice_recorder...")
                 voice_recorder_file = GlobalUtils.randomString() + ".wav"
@@ -57,11 +58,12 @@ class Listener:
 
                 print("_speech_to_text...")
                 self._speech_to_text_result = self.speechtotextmaker.get_text_by_audio(voice_recorder_file)
-
+                
                 if self._speech_to_text_result["error"] != None:
-                    raise Exception("error occured" + self._speech_to_text_result["error"] )
-
+                    raise Exception("error occured " + self._speech_to_text_result["error"] )
+                
                 text = self._speech_to_text_result["transcription"]
+                print(text)
                 if text == None:
                     raise Exception("error occured")
 
@@ -89,8 +91,8 @@ class Listener:
                             self.textToSpeech.speak(self.reponseRandomProvider.no_access_right())
                         else:
                             self.textToSpeech.speak("Chargement du module demandé")
-                            self.moduleManager.switch_to_module(command_code)
-                            break
+                            self.systemModeManager.set_system_mode(mode)
+                            self.code = self.systemModeManager.get_current_mode()
                     #break
             except Exception as e:
                 print(e)
@@ -103,6 +105,8 @@ class Listener:
                     if os.path.isfile(file):
                         os.remove(file)
                         print("file ", file, " deleted")
+            
+            return self.code
 
 
 if __name__ == "__main__":

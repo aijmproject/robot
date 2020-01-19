@@ -5,10 +5,10 @@ from utils import GlobalUtils
 from faces_detection_moc import FacesDetectorMoc
 from scene_descriptor_moc import SceneDescriptorMoc
 from client_db_api.surveillance_db_api import SurveillanceDbAPI
-from listener import Listener
+#from module_main import Listener
 import time
 
-class IntrusionDetectorMoc(Listener):
+class IntrusionDetectorMoc():
     def __init__(self):
         # GPIO module, dynamically loaded depending on config
         self.GPIO = None
@@ -18,14 +18,31 @@ class IntrusionDetectorMoc(Listener):
         self.surveillanceDbAPI = SurveillanceDbAPI()
 
     def launch_specific_task(self):
-        print("IntrusionDetectorMoc")
+        #print("IntrusionDetectorMoc")
+        time.sleep(30)
 
+        video_recorder_file = GlobalUtils.randomString() + ".avi"
+        #record for 1 minutes
+        self.videoRecorder.record(video_recorder_file)
+
+        users_list = self.facesDetectorMoc.detect_faces(video_recorder_file)
+        #print(users_list)
+
+        description = self.sceneDescriptorMoc.describe(video_recorder_file)
+        #return 2
+        
+
+
+    def check(self):
+        print("IntrusionDetectorMoc : test")
+        time.sleep(30)
+        return 2
     """
     def check(self):
         
         time.sleep(30)
 
-        video_recorder_file = GlobalUtils.randomString() + ".wav"
+        video_recorder_file = GlobalUtils.randomString() + ".avi"
         #record for 1 minutes
         self.videoRecorder.record(video_recorder_file)
 

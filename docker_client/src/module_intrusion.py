@@ -7,7 +7,8 @@ from video_recorder import VideoRecorder
 from utils import GlobalUtils
 from faces_detection_moc import FacesDetectorMoc
 from client_db_api.surveillance_db_api import SurveillanceDbAPI
-class IntrusionDetector:
+
+class IntrusionDetector(Listener):
     def __init__(self):
         # GPIO module, dynamically loaded depending on config
         self.GPIO = None
