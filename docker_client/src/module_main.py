@@ -15,7 +15,10 @@ import threading
 import random
 import string
 from utils import GlobalUtils
-class Listener:
+import subprocess
+from module_manager import ModuleManager
+from command_module_mapper import CommandModuleMapper
+class VocalCommandController:
     def __init__(self):
         self.speechtotextmaker = SpeechToTextMakerGoogle()
         self.command_mapper = TextCommandMapper()
@@ -26,28 +29,27 @@ class Listener:
         self.audioDownSampler = AudioDownSampler()
         self.reponseRandomProvider = ResponseRandomProvider()
         self.systemModeManager = SystemModeManager()
+        self.moduleManager = ModuleManager()
+        self.commandModuleMapper = CommandModuleMapper()
         self.empty_profile_id = "00000000-0000-0000-0000-000000000000"
 
         self.subscription_key = "b4736e77574f48fe802b55364a2b2e44"
         self.srobot = "s robot"
-        self.command_text_to_code = {"passe en mode surveillance bébé":1, "passe en mode surveillance maison":2}
 
         self._speech_to_text_result = None
         self.voice_recorder_result = None
-
-        self.code = 0
     
     def launch_specific_task(self):
         print("******nothing*******")
 
-    def check(self):
+    def listen(self):
         files_to_delete = []
         while True:
             try:
                 
                 #check if current database value for current module changed then quit
-                if self.systemModeManager.is_current_mode() == False:
-                    return self.systemModeManager.get_current_mode()
+                #if self.systemModeManager.is_current_mode() == False:
+                #    self.moduleManager.load()
                 
                 self.launch_specific_task() #override by derived classes
 
@@ -63,12 +65,12 @@ class Listener:
                     raise Exception("error occured " + self._speech_to_text_result["error"] )
                 
                 text = self._speech_to_text_result["transcription"]
-                print(text)
+                
                 if text == None:
                     raise Exception("error occured")
-
+                print("sentence :", text)        
                 if self.srobot in text:
-                    print("text : ", text)
+                    
                     command_text = text.replace(self.srobot,"").strip()
                     command_code = self.command_mapper.get_code_by_text(command_text)
 
@@ -90,9 +92,9 @@ class Listener:
                         if verified_user_profile_id == self.empty_profile_id:
                             self.textToSpeech.speak(self.reponseRandomProvider.no_access_right())
                         else:
-                            self.textToSpeech.speak("Chargement du module demandé")
-                            self.systemModeManager.set_system_mode(mode)
-                            self.code = self.systemModeManager.get_current_mode()
+                            self.textToSpeech.speak("Chargement du module {0}".format(self.commandModuleMapper.code_to_module[command_code]))
+                            self.moduleManager.switch_to_module(command_code)
+                            
                     #break
             except Exception as e:
                 print(e)
@@ -106,13 +108,13 @@ class Listener:
                         os.remove(file)
                         print("file ", file, " deleted")
             
-            return self.code
+            #return self.code
 
 
 if __name__ == "__main__":
-    app  = Listener()
+    app  = VocalCommandController()
     print("à l'écoute")
-    app.check()
+    app.listen()
 
                     
 

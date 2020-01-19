@@ -1,8 +1,9 @@
 
 from client_db_api.surveillance_db_api import SurveillanceDbAPI
-#controller 0
+
 #bebe 1
 #intrusion 2
+#controller 3
 class SystemModeManager:
     def __init__(self):
         self.surveillancedb  = SurveillanceDbAPI()

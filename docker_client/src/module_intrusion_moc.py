@@ -8,7 +8,7 @@ from client_db_api.surveillance_db_api import SurveillanceDbAPI
 #from module_main import Listener
 import time
 
-class IntrusionDetectorMoc():
+class IntrusionDetectorMoc:
     def __init__(self):
         # GPIO module, dynamically loaded depending on config
         self.GPIO = None
@@ -35,8 +35,18 @@ class IntrusionDetectorMoc():
 
     def check(self):
         print("IntrusionDetectorMoc : test")
+        for i in range(0,1000):
+            time.sleep(1)
+            print(i, "---")
         time.sleep(30)
-        return 2
+        
+    
+    
+if __name__ == "__main__":
+    app  = IntrusionDetectorMoc()
+    print("à l'écoute")
+    app.check()
+
     """
     def check(self):
         

@@ -16,12 +16,12 @@ class SpeechToTextMakerGoogle:
         return self._recognize_speech_from_mic(recognizer, mic)
 
     def get_text_by_audio(self, audiofile):
-        print("step 1")
+        #print("step 1")
         recognizer = sr.Recognizer()
-        print("step 2")
+        #print("step 2")
         with sr.WavFile(audiofile) as source:              # use "test.wav" as the audio source
             audio = recognizer.record(source) 
-        print("step 3")
+        #print("step 3")
         return self._recognize_speech_from_audio(recognizer,audio)
 
     def _recognize_speech_from_mic(self, recognizer, microphone):
@@ -63,7 +63,7 @@ class SpeechToTextMakerGoogle:
         # if a RequestError or UnknownValueError exception is caught,
         #   update the response object accordingly
         try:
-            print("step 4")
+            #print("step 4")
             response["transcription"] = recognizer.recognize_google(audiofile, language="fr-FR")
         except sr.RequestError:
             # API was unreachable or unresponsive
@@ -73,7 +73,7 @@ class SpeechToTextMakerGoogle:
             # speech was unintelligible
             response["error"] = "Unable to recognize speech"
 
-        print("step 5")
+        #print("step 5")
         return response
 
 
