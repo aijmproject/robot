@@ -46,10 +46,9 @@ class VocalCommandController:
         files_to_delete = []
         while True:
             try:
-                
                 #check if current database value for current module changed then quit
-                if self.systemModeManager.is_current_mode() == False:
-                    self.moduleManager.load()
+                #if self.systemModeManager.is_current_mode() == False:
+                #    self.moduleManager.load()
                 
                 #self.launch_specific_task() #override by derived classes
 

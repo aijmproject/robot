@@ -1,0 +1,4 @@
+https://voice-recorder-online.com/fr/
+enregistrement du fichier en format wav
+
+ffmpeg -i junior.record.2.wav -acodec pcm_s16le -ar 16000 -ac 1 junior.record.2.16K.wav

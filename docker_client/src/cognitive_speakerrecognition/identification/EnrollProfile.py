@@ -30,7 +30,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
-import IdentificationServiceHttpClientHelper
+from identification_service_http_client_helper import IdentificationServiceHttpClientHelper
 import sys
 
 def enroll_profile(subscription_key, profile_id, file_path, force_short_audio):
@@ -42,7 +42,7 @@ def enroll_profile(subscription_key, profile_id, file_path, force_short_audio):
     file_path -- the path of the file to use for enrollment
     force_short_audio -- waive the recommended minimum audio limit needed for enrollment
     """
-    helper = IdentificationServiceHttpClientHelper.IdentificationServiceHttpClientHelper(
+    helper = IdentificationServiceHttpClientHelper(
         subscription_key)
 
     enrollment_response = helper.enroll_profile(
