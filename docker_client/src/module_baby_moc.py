@@ -1,36 +1,25 @@
 import time
 from client_db_api.surveillance_db_api import SurveillanceDbAPI
 from system_mode_manager import SystemModeManager 
+from baby_predictor.cry_predictor import BabyCryPredictor
+from system_mode_manager import SystemModeManager
+from enum_modules import EnumModules
+
 class BabyCryDetectorMoc():
     def __init__(self):
-        #Listener.__init__(self)
         self.surveillanceDbAPI = SurveillanceDbAPI()
         self.systemModeManager = SystemModeManager()
-
-    def launch_specific_task(self):
-        print("BabyCryDetectorMoc --")
+        self.babyCryPredictor = BabyCryPredictor()
 
     def listen(self):
-
-        print("IntrusionDetectorMoc : test")
-        for i in range(0,1000):
-            #if self.systemModeManager.is_current_mode() == False:
-            #    self.moduleManager.load()
-            time.sleep(1)
-            print(i, "---")
-        time.sleep(30)
-
-    #def check(self):
-    #    print("BabyCryDetectorMoc : test")
-    #    time.sleep(30)
-    #    return 1
-    """
-    def check(self):
         while True:
-            time.sleep(60)
-            self.surveillanceDbAPI.add_new_intrusion("bebe", "pleurer","bebe","-" )
-    """
-    
+            pred = self.babyCryPredictor.predict()
+            if pred == True:
+                self.surveillanceDbAPI.add_new_intrusion("BABY", "-", "BABY", "-")
+                self.systemModeManager.set_system_mode(EnumModules.CONTROLLER)
+                break
+            else:
+                time.sleep(10)
 
 if __name__ == "__main__":
     app  = BabyCryDetectorMoc()

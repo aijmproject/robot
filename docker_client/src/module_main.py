@@ -34,7 +34,7 @@ class VocalCommandController:
         self.empty_profile_id = "00000000-0000-0000-0000-000000000000"
 
         self.subscription_key = "b4736e77574f48fe802b55364a2b2e44"
-        self.srobot = "s robot"
+        self.srobot = "robot"
 
         self._speech_to_text_result = None
         self.voice_recorder_result = None
@@ -48,10 +48,10 @@ class VocalCommandController:
             try:
                 
                 #check if current database value for current module changed then quit
-                #if self.systemModeManager.is_current_mode() == False:
-                #    self.moduleManager.load()
+                if self.systemModeManager.is_current_mode() == False:
+                    self.moduleManager.load()
                 
-                self.launch_specific_task() #override by derived classes
+                #self.launch_specific_task() #override by derived classes
 
                 print("_voice_recorder...")
                 voice_recorder_file = GlobalUtils.randomString() + ".wav"
