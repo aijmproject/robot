@@ -16,5 +16,5 @@ class ResponseRandomProvider:
         return random.choice(self.bot_ask_to_speaks)
     
     def fatal_error_text(self):
-        retunr random.choice(self.fatal_error_texts)
+        return random.choice(self.fatal_error_texts)
 

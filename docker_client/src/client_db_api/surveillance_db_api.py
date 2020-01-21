@@ -85,7 +85,7 @@ class SurveillanceDbAPI:
         if last_item == None:
             intrusion_id = 1
         else:
-            intrusion_id = last_item["intrusion_id"] + 1
+            intrusion_id = int(last_item["intrusion_id"]) + 1
         line_to_insert = {
                 "intrusion_id": intrusion_id,
                 "date": datetime.datetime.today(),

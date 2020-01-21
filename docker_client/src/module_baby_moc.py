@@ -9,13 +9,15 @@ class BabyCryDetectorMoc():
     def __init__(self):
         self.surveillanceDbAPI = SurveillanceDbAPI()
         self.systemModeManager = SystemModeManager()
-        self.babyCryPredictor = BabyCryPredictor()
+        self.babyCryPredictor = BabyCryPredictor("baby_predictor/")
 
     def listen(self):
         while True:
             pred = self.babyCryPredictor.predict()
+            print("pred:", pred)
             if pred == True:
                 self.surveillanceDbAPI.add_new_intrusion("BABY", "-", "BABY", "-")
+                print("baby cry loading module....")
                 self.systemModeManager.set_system_mode(EnumModules.CONTROLLER)
                 break
             else:

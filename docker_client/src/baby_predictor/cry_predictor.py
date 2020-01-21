@@ -24,12 +24,13 @@ class BabyCryPredictor():
     Class to classify a new audio signal and determine if it's a baby cry
     """
 
-    def __init__(self):
-        self.filepath = 'trained_model/cnn_baby.hdf5'
+    def __init__(self, path_dir):
+        self.path_dir = path_dir
+        self.filepath = self.path_dir + '/trained_model/cnn_baby.hdf5'
         self.filename = 'record.wav'
-        self.path_filename= 'temp'
-        self.path_to_save='temp/'
-        self.image_path = "temp/record.wav.png"
+        self.path_filename= self.path_dir + '/temp'
+        self.path_to_save = self.path_dir + '/temp/'
+        self.image_path = self.path_dir + "/temp/record.wav.png"
 
     def reader(self):
         fs = 22050
@@ -39,7 +40,7 @@ class BabyCryPredictor():
         print('stop')
         
         x = np.squeeze(x)
-        write('temp/record.wav', fs, x)
+        write(self.path_dir + '/temp/record.wav', fs, x)
         
     def create_spectrogram(self):
        
@@ -94,12 +95,13 @@ class BabyCryPredictor():
         #training_set.class_indices
         if result[0][0] == 1:
             prediction = False
-
+    
         else:
             prediction = True
         os.remove(self.image_path)
         return prediction
     
 if __name__ == '__main__':
-    BabyCryPredictor()
+    app = BabyCryPredictor()
+    app.predict()
     

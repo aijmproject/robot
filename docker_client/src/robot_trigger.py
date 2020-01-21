@@ -28,6 +28,7 @@ class RobotTrigger:
         self.files_to_delete = []
         self.empty_profile_id = "00000000-0000-0000-0000-000000000000"
         self.subscription_key = "b4736e77574f48fe802b55364a2b2e44"
+        self.force_listen = False
 
     def clean_temp_files(self):
         #delete recorded wave file
@@ -40,10 +41,17 @@ class RobotTrigger:
 
     def _get_trigger(self):
 
+        #if self.force_listen == True, on ignore l'écoute car on veut forcer l'écoute de la commande
+        if self.force_listen == True:
+            return self.trigger
+
         print("Beginning to listen...")
         with speech_recognition.Microphone() as source:
+                    #print("step 1")
                     self.recognizer.adjust_for_ambient_noise(source)
+                    print("Parler...")
                     audio = self.recognizer.listen(source)
+                    print("Fin de l'écoute!")
 
         try:
             return self.recognizer.recognize_google(audio, language="fr-FR")
@@ -57,16 +65,15 @@ class RobotTrigger:
         
         while True:
             result = self._get_trigger()
-            print(result)
             if result == self.trigger:
                 self._listen_command()
-                #self.current_process = subprocess.Popen('python module_main.py', creationflags=subprocess.CREATE_NEW_CONSOLE)
             time.sleep(1)
 
 
     def _listen_command(self):
         try:
-            self.textToSpeech.speak(self.reponseRandomProvider.bot_ask_to_speak())
+            if self.force_listen == False:
+                self.textToSpeech.speak(self.reponseRandomProvider.bot_ask_to_speak())
 
             voice_recorder_file = GlobalUtils.randomString() + ".wav"
             self.files_to_delete.append(voice_recorder_file)
@@ -74,10 +81,12 @@ class RobotTrigger:
             print("listen to input command...")
             with speech_recognition.Microphone() as source:
                         self.recognizer.adjust_for_ambient_noise(source)
+                        print("Parler...")
                         audio2 = self.recognizer.listen(source)
+                        print("Fin de l'écoute!")
                         with open(voice_recorder_file, "wb") as f:
                             f.write(audio2.get_wav_data())
-
+                        
             command_text = ""
             try:
                 command_text =  self.recognizer.recognize_google(audio2, language="fr-FR")
@@ -88,6 +97,7 @@ class RobotTrigger:
             command_code = self.command_mapper.get_code_by_text(command_text)
             if command_code == -1:
                 self.textToSpeech.speak(self.reponseRandomProvider.not_undestand_command())
+                self.force_listen = True
             else:
                 voice_recorder_file_16k = AudioFileConvertor.convert_to_mono_16K(voice_recorder_file)
                 self.files_to_delete.append(voice_recorder_file_16k)
@@ -99,11 +109,15 @@ class RobotTrigger:
                 else:
                     self.textToSpeech.speak("Chargement du module {0}".format(self.commandModuleMapper.code_to_module[command_code]))
                     self.moduleManager.switch_to_module(command_code)
+            
+                self.force_listen = False
 
         except Exception as e:
             print(e)
             traceback.print_exc(file=sys.stdout)
             self.textToSpeech.speak(self.reponseRandomProvider.fatal_error_text())
+            self.force_listen = True
+
         finally:
             self.clean_temp_files()
 
