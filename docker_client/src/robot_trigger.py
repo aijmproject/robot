@@ -2,7 +2,6 @@
 
 import speech_recognition
 import time
-#from subprocess import call
 import subprocess
 from module_text_to_speech import TextToSpeech
 from text_command_mapper import TextCommandMapper
@@ -40,6 +39,7 @@ class RobotTrigger:
                 print("file ", file, " deleted")
 
     def _get_trigger(self):
+
         print("Beginning to listen...")
         with speech_recognition.Microphone() as source:
                     self.recognizer.adjust_for_ambient_noise(source)
@@ -66,7 +66,7 @@ class RobotTrigger:
 
     def _listen_command(self):
         try:
-            self.textToSpeech.speak("Oui, quelle est votre demande")
+            self.textToSpeech.speak(self.reponseRandomProvider.bot_ask_to_speak())
 
             voice_recorder_file = GlobalUtils.randomString() + ".wav"
             self.files_to_delete.append(voice_recorder_file)
@@ -103,6 +103,7 @@ class RobotTrigger:
         except Exception as e:
             print(e)
             traceback.print_exc(file=sys.stdout)
+            self.textToSpeech.speak(self.reponseRandomProvider.fatal_error_text())
         finally:
             self.clean_temp_files()
 
