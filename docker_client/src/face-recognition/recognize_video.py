@@ -12,8 +12,7 @@ Clean le code / opti
 		 train_model.py [svm]
 	 if new video : 
 		 lance recognize_video ok
-		 // add --> id moving object --> add new pictures for model to opti (depends on over fitting) (pas besoin je pense)
-		 // 						 --> average all detection to give a better guess of the personne ok 
+		 // add --> id moving object --> average all detection to give a better guess of the personne OK
 		 //							 --> add new unknow face X to data set (to observe same X guy) 
 		 /////// imposible :
 		 // add emotion detection
@@ -46,9 +45,10 @@ import cv2
 import os
 import operator
 
-
-def return_best_id_count(dic) :
+#faire function general envoie les reconaissances de chaque id
+def return_best_id(dic) :
 	maxi = []
+	#for key, dic in fulldic.items() :
 	for key, value in dic.items():
 		max_value = max(value.items(), key=operator.itemgetter(1))[0]
 		maxi.append([key, max_value])
@@ -103,7 +103,8 @@ def recognize_video(video_input = 1) :
 	else  :
 		cap = cv2.VideoCapture(video_input)
 		# all info extracted from video
-		all_names = {}
+		best_id_count = {}
+		best_id_moy = {}
 
 	# start the FPS throughput estimator
 	fps = FPS().start()
@@ -121,10 +122,10 @@ def recognize_video(video_input = 1) :
 		# resize the frame to have a width of 600 pixels (while
 		# maintaining the aspect ratio), and then grab the image
 		# dimensions
-		try :
+		try:
 			frame = imutils.resize(frame, width=600)
 		except AttributeError:	
-			return return_best_id_count(best_id)
+			return  return_best_id(best_id_count) , return_best_id(best_id_moy)
 
 		(h, w) = frame.shape[:2]
 
@@ -227,7 +228,7 @@ def recognize_video(video_input = 1) :
 
 		# if the `q` key was pressed, break from the loop
 		if key == ord("q"):
-			return best_id_count, best_id_moy
+			return return_best_id(best_id_count) , return_best_id(best_id_moy)
 			break
 
 	if video_input == 1 :
@@ -241,5 +242,13 @@ def recognize_video(video_input = 1) :
 		vs.stop()
 
 if __name__ == "__main__":
-	best_id_count, best_id_moy = recognize_video(video_input= 1)
-	print(best_id_count, best_id_moy)
+	import os.path
+
+	if os.path.isfile(r"C:\Users\utilisateur\Desktop\python-code\opencv-face-recognition\images\video_matthew.mp4"):
+		print("File exist")
+		best_id_count, best_id_moy = recognize_video(video_input= r"C:\Users\utilisateur\Desktop\python-code\opencv-face-recognition\images\video_matthew.mp4")
+		print(best_id_count, best_id_moy)
+	else:
+		print ("File not exist")
+
+	

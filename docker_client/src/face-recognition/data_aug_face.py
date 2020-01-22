@@ -1,5 +1,7 @@
 #https://github.com/aleju/imgaug list of data augmentation à voir pour opti
-
+"""
+- comment gere les visages non blasé ? data aug distortion d'image ? (coupé haut / bas visage, flexibilité )
+"""
 from imutils import paths
 import os
 import imageio
