@@ -5,7 +5,8 @@ class VideoRecorder:
 
     def record(self, name):
         # The duration in seconds of the video captured
-        capture_duration = 60
+        time.sleep(2) #wait 2 sec
+        capture_duration = 5
 
         # Create a VideoCapture object
         cap = cv2.VideoCapture(0)

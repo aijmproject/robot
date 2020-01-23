@@ -29,9 +29,10 @@ class SurveillanceDbAPI:
             }
 
         try:
-            self.collection.insert_one(line_to_insert)
+           return self.collection.insert_one(line_to_insert)
         except Exception as e:
-            print(e)  
+            print(e) 
+            return "" 
     # check if this landmark exist ? (strange with out tolerence ?)
     def user_exists_by_landmarks(self,landmarks):
         try:
@@ -91,13 +92,14 @@ class SurveillanceDbAPI:
                 "date": datetime.datetime.today(),
                 "evenement": evenement,
                 "description": description,
-                "identification": datetime.datetime.today(),
+                "identification": identification,
                 "video_link": video_link
             }
         try:
-            self.collection_intrusion.insert_one(line_to_insert)
+           return self.collection_intrusion.insert_one(line_to_insert)
         except Exception as e:
             print(e) 
+            return ""
 
 
 
