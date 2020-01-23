@@ -36,3 +36,8 @@ pip install librosa
 
 sudo apt install libatlas-base-dev
 pip3 install tensorflow
+
+
+pip install cython
+sudo apt-get install libhdf5-dev
+pip install h5py
