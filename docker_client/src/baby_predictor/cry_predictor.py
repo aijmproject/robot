@@ -31,6 +31,7 @@ class BabyCryPredictor():
         self.path_filename= self.path_dir + '/temp'
         self.path_to_save = self.path_dir + '/temp/'
         self.image_path = self.path_dir + "/temp/record.wav.png"
+        self.audio_path = self.path_dir + "/temp/record.wav"
 
     def reader(self):
         fs = 22050
@@ -99,6 +100,7 @@ class BabyCryPredictor():
         else:
             prediction = True
         os.remove(self.image_path)
+        os.remove(self.audio_path)
         return prediction
     
 if __name__ == '__main__':

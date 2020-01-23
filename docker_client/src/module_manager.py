@@ -6,6 +6,7 @@ import subprocess
 from enum_modules import EnumModules
 import os
 import signal
+from platform import python_version
 class ModuleManager:
     def __init__(self):
         self.code =  0
@@ -18,18 +19,24 @@ class ModuleManager:
         self.systemModeManager.set_system_mode(code)
         self.load()
 
+    def _get_python_commandd(self):
+        if python_version().startswith("2"):
+            return "python3"
+        return "python"
+
     def load(self):
+        python_command = self._get_python_commandd()
         if self.current_process != None:
             self.current_process.kill()
         if self.code == EnumModules.BABY:
-           self.current_process = subprocess.Popen('python module_baby_moc.py', creationflags=subprocess.CREATE_NEW_CONSOLE)
+           self.current_process = subprocess.Popen('{0} module_baby_moc.py'.format(python_command), creationflags=subprocess.CREATE_NEW_CONSOLE)
         elif self.code == EnumModules.INTRUSION:
-          self.current_process =  subprocess.Popen('python module_intrusion_moc.py', creationflags=subprocess.CREATE_NEW_CONSOLE)
+          self.current_process =  subprocess.Popen('{0} module_intrusion_moc.py'.format(python_command), creationflags=subprocess.CREATE_NEW_CONSOLE)
         #elif self.code == EnumModules.CONTROLLER:
         #    self.current_process.kill()
         #elif self.code == 3:
 
-
+        
         
         """
          while True:
