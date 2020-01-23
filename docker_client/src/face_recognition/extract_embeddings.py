@@ -28,12 +28,12 @@ def extract_embeddings() :
 	embedder = cv2.dnn.readNetFromTorch(args["embedding_model"])
 
 
-	""" later
+	
 	# initialize dlib's face detector (HOG-based) and then create
 	# the facial landmark predictor and the face aligner
 	predictor = dlib.shape_predictor(args["shape_predictor"])
 	fa = FaceAligner(predictor, desiredFaceWidth=256)
-	"""
+	
 
 
 	# grab the paths to the input images in our dataset
@@ -89,13 +89,38 @@ def extract_embeddings() :
 
 				# extract the face ROI and grab the ROI dimensions
 				face = image[startY:endY, startX:endX]
-				""" later
+				"""
 				#gray scale 
 				gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 				#data augmentation with only face 
-				print(type(image), type(gray), type([(startX, startY), (endX, endY)]))
-				faceAligned = fa.align(image, gray, [(startX, startY), (endX, endY)])
+				faceBoxRectangleS = dlib.rectangle(left=startX, top=startY, right=endX, bottom=endY)
+				faceAligned = fa.align(image, gray, faceBoxRectangleS)
+				cv2.imshow("facealigned", faceAligned)
+				cv2.imshow("Original", face)
+				#### redetect face 
+				
+				faceAligned = imutils.resize(faceAligned, width=300)
+				(h, w) = faceAligned.shape[:2]
+				imageBlob = cv2.dnn.blobFromImage(
+				cv2.resize(faceAligned, (125, 125)), 1.0, (125, 125),
+				(104.0, 177.0, 123.0), swapRB=False, crop=False)
+				print(imageBlob)
+				detector.setInput(imageBlob)
+				detections = detector.forward()
+				print(len(detections))
+				i = np.argmax(detections[0, 0,:, 2])
+				confidence = detections[0, 0, i, 2]
+				print(confidence)
+				print(detections[0, 0, i, 3:7])
+				box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
+				(startX, startY, endX, endY) = box.astype("int")
+				print((startX, startY, endX, endY))
+				face_zoomed = faceAligned[startY:endY, startX:endX]
+				cv2.imshow("face_zoomed", face_zoomed)
+				####
+				cv2.waitKey(0)
 				"""
+				
 				face_aug = data_aug(face) 
 
 				# construct a blob for the face ROI, then pass the blob
