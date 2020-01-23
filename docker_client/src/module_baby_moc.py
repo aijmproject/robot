@@ -16,7 +16,7 @@ class BabyCryDetectorMoc():
             pred = self.babyCryPredictor.predict()
             print("pred:", pred)
             if pred == True:
-                self.surveillanceDbAPI.add_new_intrusion("BABY", "-", "BABY", "-")
+                self.surveillanceDbAPI.add_new_intrusion("Bébé", "-", "Bébé", "-")
                 print("baby cry loading module....")
                 self.systemModeManager.set_system_mode(EnumModules.CONTROLLER)
                 break
