@@ -41,3 +41,5 @@ pip3 install tensorflow
 pip install cython
 sudo apt-get install libhdf5-dev
 pip install h5py
+conda install shapely
+pip3 install imgaug
