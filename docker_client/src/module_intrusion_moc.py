@@ -7,7 +7,7 @@ from scene_descriptor_moc import SceneDescriptorMoc
 from client_db_api.surveillance_db_api import SurveillanceDbAPI
 from system_mode_manager import SystemModeManager
 from enum_modules import EnumModules
-#from  import 
+from face_recognition.surveillance_class import FaceDetection
 #from face-recognition.surveillance_class import FaceDetection
 from storage_api.azure_uploader_files import AzureUploaderFiles
 #from module_main import Listener
@@ -22,7 +22,7 @@ class IntrusionDetectorMoc():
         self.sceneDescriptorMoc = SceneDescriptorMoc()
         self.surveillanceDbAPI = SurveillanceDbAPI()
         self.systemModeManager = SystemModeManager()
-        #self.faceDetection = FaceDetection()
+        self.faceDetection = FaceDetection()
         self.azureUploaderFiles = AzureUploaderFiles()
 
     def check(self):
@@ -31,14 +31,21 @@ class IntrusionDetectorMoc():
             detect = f.read()
             if detect == "1":
                 
-                video_recorder_file = "videos/" + GlobalUtils.randomString() + ".avi"
+                dir_path = "videos/"
+                if not os.path.exists(dir_path):
+                    os.makedirs(dir_path)
+                    print("videos folder created")
+
+                video_recorder_file = dir_path + GlobalUtils.randomString() + ".avi"
                 #record for 1 minutes
                 print("recording video...")
                 self.videoRecorder.record(video_recorder_file)
 
                 #UPLOAD video
                 print("faces detection...")
-                #users_list = self.faceDetection.(video_recorder_file)
+                users_list = self.faceDetection.run_video(video_recorder_file)
+                print(users_list)
+                break
                 users_list = ["inconnu"]
                 seperator = ', '
                 users_list_str = seperator.join(users_list)

@@ -3,6 +3,7 @@ from pymongo import errors
 import pymongo 
 from datetime import date
 import datetime
+#from bson import ObjectId
 
 class SurveillanceDbAPI:
     def __init__(self, connectionstring='mongodb://adminrobot:mongodb123@51.178.29.234:27017/'):
@@ -101,10 +102,13 @@ class SurveillanceDbAPI:
             print(e) 
             return ""
 
-
-
     def get_last_system_mode(self):
         return self.collection_mode_system.find_one(sort=[( '_id', pymongo.DESCENDING )])
+
+    def update_system_mode(self,mongo_id, mode):
+        print("step 1")
+        self.collection_mode_system.update_one({"_id": mongo_id}, {"$set":{"mode": mode}})
+        print("step 2")
 
     def add_new_system_mode(self, mode):
         line_to_insert = {
@@ -115,6 +119,3 @@ class SurveillanceDbAPI:
             self.collection_mode_system.insert_one(line_to_insert)
         except Exception as e:
             print(e) 
-
-#surveillance = SurveillanceDbAPI()
-#surveillance.add_new_user("junior", "[[286, 261], [284, 283], [284, 306], [287, 327], [292, 348], [302, 369], [315, 385], [332, 395], [354, 398], [377, 396], [399, 387], [419, 373], [433, 356], [442, 336], [447, 314], [450, 292], [451, 271], [296, 249], [305, 239], [321, 238], [335, 241], [349, 248], [371, 248], [385, 242], [402, 239], [418, 242], [429, 250], [359, 266], [357, 282], [355, 298], [354, 314], [335, 322], [344, 325], [355, 328], [366, 325], [376, 322], [307, 266], [317, 261], [329, 262], [340, 269], [328, 271], [316, 271], [381, 269], [391, 261], [403, 261], [413, 266], [404, 270], [392, 271], [324, 348], [335, 344], [346, 342], [355, 343], [364, 341], [378, 343], [393, 347], [379, 356], [365, 360], [355, 361], [345, 361], [334, 356], [330, 348], [346, 350], [355, 351], [365, 350], [387, 348], [365, 349], [355, 350], [346, 349]]")

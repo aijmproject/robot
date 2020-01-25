@@ -13,7 +13,6 @@ class ModuleManager:
         self.systemModeManager = SystemModeManager()
         self.current_process = None
         
-    
     def switch_to_module(self, code):
         self.code = code
         self.systemModeManager.set_system_mode(code)
