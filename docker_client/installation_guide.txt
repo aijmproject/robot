@@ -48,3 +48,4 @@ pip3 install imgaug
 pip install azure-storage-file
 pip3 install imutils
 pip3 install imageio
+pip3 install imgaug
