@@ -50,7 +50,7 @@ pip3 install imutils
 pip3 install imageio
 pip3 install imgaug
 
-pip3 install opencv-python
+pip3 install opencv-python==3.4.6.27
 sudo apt-get install libatlas-base-dev
 sudo apt-get install libjasper-dev
 sudo apt-get install libqtgui4
