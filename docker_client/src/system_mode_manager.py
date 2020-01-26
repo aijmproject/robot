@@ -1,5 +1,5 @@
 
-from client_db_api.surveillance_db_api import SurveillanceDbAPI
+from surveillance_db_api import SurveillanceDbAPI
 
 #bebe 1
 #intrusion 2

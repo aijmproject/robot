@@ -4,7 +4,7 @@ from video_recorder import VideoRecorder
 from utils import GlobalUtils
 from faces_detection_moc import FacesDetectorMoc
 from scene_descriptor_moc import SceneDescriptorMoc
-from client_db_api.surveillance_db_api import SurveillanceDbAPI
+from surveillance_db_api import SurveillanceDbAPI
 from system_mode_manager import SystemModeManager
 from enum_modules import EnumModules
 from face_recognition.surveillance_class import FaceDetection

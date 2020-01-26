@@ -6,7 +6,7 @@
 from sklearn.preprocessing import LabelEncoder
 from sklearn.svm import SVC
 import pickle
-from extract_embeddings import extract_embeddings
+from .extract_embeddings import extract_embeddings
 import pathlib
 
 def train_model() :

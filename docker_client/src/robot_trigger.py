@@ -8,7 +8,7 @@ from text_command_mapper import TextCommandMapper
 from response_random_provider import ResponseRandomProvider
 from module_manager import ModuleManager
 from audio_file_convertor import AudioFileConvertor
-from client_db_api.surveillance_db_api import SurveillanceDbAPI
+from surveillance_db_api import SurveillanceDbAPI
 from utils import GlobalUtils
 import os
 import sys, traceback
@@ -102,13 +102,16 @@ class RobotTrigger:
                 voice_recorder_file_16k = AudioFileConvertor.convert_to_mono_16K(voice_recorder_file)
                 self.files_to_delete.append(voice_recorder_file_16k)
                 
-                user_profile_ids = [item["mcs_sr_profile_id"] for item in self.surveillanceDb.get_all_users()]
-                verified_user_profile_id = self.identifyFile.identify_file(self.subscription_key,voice_recorder_file_16k,"true",user_profile_ids)
-                if verified_user_profile_id == self.empty_profile_id:
-                    self.textToSpeech.speak(self.reponseRandomProvider.no_access_right())
-                else:
-                    self.textToSpeech.speak("Chargement du module {0}".format(self.commandModuleMapper.code_to_module[command_code]))
-                    self.moduleManager.switch_to_module(command_code)
+                self.textToSpeech.speak("Chargement du module {0}".format(self.commandModuleMapper.code_to_module[command_code]))
+                self.moduleManager.switch_to_module(command_code)
+                
+                #user_profile_ids = [item["mcs_sr_profile_id"] for item in self.surveillanceDb.get_all_users()]
+                #verified_user_profile_id = self.identifyFile.identify_file(self.subscription_key,voice_recorder_file_16k,"true",user_profile_ids)
+                #if verified_user_profile_id == self.empty_profile_id:
+                #    self.textToSpeech.speak(self.reponseRandomProvider.no_access_right())
+                #else:
+                #    self.textToSpeech.speak("Chargement du module {0}".format(self.commandModuleMapper.code_to_module[command_code]))
+                #    self.moduleManager.switch_to_module(command_code)
             
                 self.force_listen = False
 

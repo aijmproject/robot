@@ -1,5 +1,6 @@
+# coding=utf-8
 import time
-from client_db_api.surveillance_db_api import SurveillanceDbAPI
+from surveillance_db_api import SurveillanceDbAPI
 from system_mode_manager import SystemModeManager 
 from baby_predictor.cry_predictor import BabyCryPredictor
 from system_mode_manager import SystemModeManager
@@ -13,17 +14,30 @@ class BabyCryDetectorMoc():
 
     def listen(self):
         while True:
-            pred = self.babyCryPredictor.predict()
-            print("pred:", pred)
-            if pred == True:
-                self.surveillanceDbAPI.add_new_intrusion("Bébé", "-", "Bébé", "-")
-                print("baby cry loading module....")
-                self.systemModeManager.set_system_mode(EnumModules.CONTROLLER)
-                break
-            else:
-                time.sleep(10)
-
+            try:
+                pred = self.babyCryPredictor.predict()
+                print("pred:", pred)
+                if pred == True:
+                    self.surveillanceDbAPI.add_new_intrusion("Bébé", "-", "Bébé", "-")
+                    print("baby cry loading module....")
+                    self.systemModeManager.set_system_mode(EnumModules.CONTROLLER)
+                    break
+                    #time.sleep(1200)
+                else:
+                    time.sleep(10)
+            except Exception as e:
+                print(e)
+        
+            
 if __name__ == "__main__":
-    app  = BabyCryDetectorMoc()
-    print("à l'écoute")
-    app.listen()
+    try:
+        app  = BabyCryDetectorMoc()
+        print("à l'écoute")
+        app.listen()
+    except Exception as e:
+        print(e)
+        filename = "newfile.txt"
+        myfile = open(filename, 'w')
+        myfile.write(str(e))
+        myfile.close()
+    

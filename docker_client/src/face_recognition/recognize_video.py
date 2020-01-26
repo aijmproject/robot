@@ -4,7 +4,7 @@
 #  best_id_moy  = the best average of all the resemblance % de model predicted
 
 # import the necessary packages
-from pyimagesearch.centroidtracker import CentroidTracker
+from .pyimagesearch.centroidtracker import CentroidTracker
 from imutils.video import VideoStream
 import numpy as np
 import imutils
@@ -26,7 +26,7 @@ def return_best_id(dic) :
 def recognize_video(video_input = 1) :
 	# construct the argument parser and parse the arguments
 	path = str(pathlib.Path(__file__).parent.absolute())
-	args = {"protoPath" : path +r"\face_detection_model\deploy.prototxt","modelPath" : path+r"\face_detection_model\res10_300x300_ssd_iter_140000.caffemodel", "embedding_model" : path+r"\openface_nn4.small2.v1.t7" , "recognizer" : path+r"\output\recognizer.pickle", "le" : path+r"\output\le.pickle", "confidence" : 0.5}
+	args = {"protoPath" : path +"/face_detection_model/deploy.prototxt","modelPath" : path+r"/face_detection_model/res10_300x300_ssd_iter_140000.caffemodel", "embedding_model" : path+r"/openface_nn4.small2.v1.t7" , "recognizer" : path+r"/output/recognizer.pickle", "le" : path+r"/output/le.pickle", "confidence" : 0.5}
 	
 	# initialize our centroid tracker and frame dimensions
 	ct = CentroidTracker()

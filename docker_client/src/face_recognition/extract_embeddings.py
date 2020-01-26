@@ -9,7 +9,7 @@ import imutils
 import pickle
 import cv2
 import os
-from data_aug_face import data_aug
+from .data_aug_face import data_aug
 import dlib
 from imutils.face_utils import FaceAligner
 import pathlib
