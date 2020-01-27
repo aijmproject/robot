@@ -36,7 +36,7 @@ class ModuleManager:
           #self.current_process =  subprocess.Popen('{0} module_intrusion_moc.py'.format(python_command), creationflags=subprocess.CREATE_NEW_CONSOLE)
           #self.current_process =  subprocess.Popen('python3 module_intrusion_moc.py'.format(python_command), shell=True)
           #os.system("x-terminal-emulator -e python3 module_intrusion_moc.py;".format(python_command))
-          self.current_process = subprocess.call(['x-terminal-emulator', '-e', 'python3 module_intrusion_moc.py'])
+          self.current_process = subprocess.call(['x-terminal-emulator', '-e', 'python3 module_intrusion.py'])
         #elif self.code == EnumModules.CONTROLLER:
         #    self.current_process.kill()
         #elif self.code == 3:
@@ -44,6 +44,6 @@ class ModuleManager:
 
 if __name__ == "__main__":
     app  = ModuleManager()
-    app.code = 2
-    app.switch_to_module(2)
-    #app.load()
+    #app.code = 2
+    #app.switch_to_module(2)
+    app.load()
