@@ -23,7 +23,7 @@ class ModuleManager:
             return "python3"
         return "python"
 
-    def load(self):
+    def load(self):moduleManager
         python_command = self._get_python_commandd()
         if self.current_process != None:
             self.current_process.kill()
@@ -44,5 +44,6 @@ class ModuleManager:
 
 if __name__ == "__main__":
     app  = ModuleManager()
-    app.code = 1
-    app.load()
+    app.code = 2
+    app.switch_to_module(2)
+    #app.load()

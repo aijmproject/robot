@@ -107,9 +107,8 @@ class SurveillanceDbAPI:
         return self.collection_mode_system.find_one(sort=[( '_id', pymongo.DESCENDING )])
 
     def update_system_mode(self,mongo_id, mode):
-        print("step 1")
         self.collection_mode_system.update_one({"_id": mongo_id}, {"$set":{"mode": mode}})
-        print("step 2")
+        
 
     def add_new_system_mode(self, mode):
         line_to_insert = {

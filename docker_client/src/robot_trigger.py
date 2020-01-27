@@ -14,6 +14,7 @@ import os
 import sys, traceback
 from identify_file import IdentifyFile
 from command_module_mapper import CommandModuleMapper
+import time
 class RobotTrigger:
     def __init__(self):
         self.trigger = "robot"
@@ -54,7 +55,10 @@ class RobotTrigger:
                     print("Fin de l'écoute!")
 
         try:
-            return self.recognizer.recognize_google(audio, language="fr-FR")
+            start = time.perf_counter()
+            result = self.recognizer.recognize_google(audio, language="fr-FR")
+            print(time.perf_counter()-start, " seconds ")
+            return result
         except speech_recognition.UnknownValueError:
             print("Could not understand audio")
         return ""

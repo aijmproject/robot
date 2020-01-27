@@ -43,15 +43,15 @@ class IntrusionDetectorMoc():
 
                 #UPLOAD video
                 print("faces detection...")
-                users_list = self.faceDetection.run_video(video_recorder_file)
-                print(users_list)
-                break
+                #users_list = self.faceDetection.run_video(video_recorder_file)
+                #print(users_list)
+               
                 users_list = ["inconnu"]
                 seperator = ', '
                 users_list_str = seperator.join(users_list)
-
                 print("adding intrusion on databse...")
-                result =  self.surveillanceDbAPI.add_new_intrusion("Intrusion", "-", users_list_str, "-")
+                result =  self.surveillanceDbAPI.add_new_intrusion("Intrusion", "-", "inconnu", "-")
+                break
                 #print("_id :", result.inserted_id)
                 #self.systemModeManager.set_system_mode(EnumModules.CONTROLLER)
 
