@@ -12,13 +12,15 @@ class PhotoCaptor:
         self.systemModeManager = SystemModeManager()
         self.azureUploaderFiles = AzureUploaderFiles()
         self.sched = sched.scheduler(time.time, time.sleep)
+        
+    def run(self):
         self.sched.enter(30, 30, self.tick, (self.sched,))
         self.sched.run()
-
+        
     def tick(self,sched):
-        #print("tick")
+        print("tick")
         current_mode = self.systemModeManager.get_current_mode()
-        #current_mode = 1
+        current_mode = 2
 
         dir_path = "screenshot_temp/"
         if not os.path.exists(dir_path):
@@ -33,15 +35,17 @@ class PhotoCaptor:
         if len(file_name) == 0:
             return
         
-        vidcap = cv2.VideoCapture(0)
+        print("video capture... ")
+        vidcap = cv2.VideoCapture(-1)
         success,image = vidcap.read()
         cv2.imwrite(file_name, image)
         vidcap.release()
-
+        print("upload to azure... ")    
         self.azureUploaderFiles.upload_photo(file_name)
         self.sched.enter(30, 30, self.tick, (sched,))
 
 if __name__ == "__main__":
     app  = PhotoCaptor()
-    print("check...")
+    print("run...")
+    app.run()
     #app.check()

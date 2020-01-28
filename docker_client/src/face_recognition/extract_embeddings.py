@@ -89,12 +89,14 @@ def extract_embeddings() :
 
 				# extract the face ROI and grab the ROI dimensions
 				face = image[startY:endY, startX:endX]
-				"""
+				
 				#gray scale 
 				gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 				#data augmentation with only face 
 				faceBoxRectangleS = dlib.rectangle(left=startX, top=startY, right=endX, bottom=endY)
 				faceAligned = fa.align(image, gray, faceBoxRectangleS)
+				
+				"""
 				cv2.imshow("facealigned", faceAligned)
 				cv2.imshow("Original", face)
 				#### redetect face 
@@ -121,7 +123,7 @@ def extract_embeddings() :
 				cv2.waitKey(0)
 				"""
 				
-				face_aug = data_aug(face) 
+				face_aug = data_aug(faceAligned) 
 
 				# construct a blob for the face ROI, then pass the blob
 				# through our face embedding model to obtain the 128-d

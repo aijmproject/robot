@@ -43,7 +43,6 @@ def data_aug(image) :
         #         for the newly created pixels (e.g. sometimes black,
         #         sometimes white)
         sometimes(iaa.Affine(
-            rotate=(-45, 45),
             order=[0, 1],
             cval=(0, 255),
             mode=ia.ALL

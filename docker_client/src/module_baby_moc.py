@@ -30,14 +30,7 @@ class BabyCryDetectorMoc():
         
             
 if __name__ == "__main__":
-    try:
-        app  = BabyCryDetectorMoc()
-        print("à l'écoute")
-        app.listen()
-    except Exception as e:
-        print(e)
-        filename = "newfile.txt"
-        myfile = open(filename, 'w')
-        myfile.write(str(e))
-        myfile.close()
+    app  = BabyCryDetectorMoc()
+    print("à l'écoute")
+    app.listen()
     
