@@ -25,9 +25,15 @@ class IntrusionDetector:
         self.azureUploaderFiles = AzureUploaderFiles()
         
     def my_callback(self, channel): #Fonction appelé dès lors détection d'un mouvement
-        print('Mouvement detecte  a :') #Affichage dans le terminal
-        date = datetime.datetime.now() #Récupération de la date et de l'heure actuelle
-        print(date.strftime("%d-%m-%Y %H:%M:%S")) #Affichage de la date et l'heure du mouvement
+        print('Mouvement detecte') #Affichage dans le terminal
+        #date = datetime.datetime.now() #Récupération de la date et de l'heure actuelle
+        #print(date.strftime("%d-%m-%Y %H:%M:%S")) #Affichage de la date et l'heure du mouvement
+        
+        dir_path = "videos/"
+        if not os.path.exists(dir_path):
+            os.makedirs(dir_path)
+            print("videos folder created")
+        
         video_recorder_file = "videos/" + GlobalUtils.randomString() + ".avi"
         #video_recorder_file = "videos/aqcenzraeh.avi"
         #record for 1 minutes

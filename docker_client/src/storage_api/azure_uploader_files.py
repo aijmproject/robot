@@ -7,11 +7,20 @@ class AzureUploaderFiles:
         self.account_key = "x3KcC1YsGE037tA7/HgC24VHG3OA11fzURgu+CGz+MXoZKDrY+6pJwor5Dd1KhBQpXMk1Mr9rpTqP8MJe6VNsw=="
         self.file_service = FileService(account_name=self.account_name, account_key=self.account_key)
         self.intrusion_videos = "intrusionvideos"
+        self.screenshot_photos = "screenshotphotos"
 
     def show_all_files(self):
         generator = self.file_service.list_directories_and_files(self.intrusion_videos)
         for file_or_dir in generator:
             print(file_or_dir.name)
+    
+    def upload_photo(self, input_file):
+        self.file_service.create_share(self.screenshot_photos)
+
+        file_name = os.path.splitext(os.path.basename(input_file))[0]
+        self.file_service.create_file_from_path(
+            self.screenshot_photos, None,file_name,input_file,
+            content_settings=ContentSettings(content_type='image/jpg'))
 
     def upload(self, input_file):
         print("create azure repo")
