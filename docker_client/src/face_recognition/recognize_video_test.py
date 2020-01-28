@@ -57,7 +57,7 @@ def return_best_id(dic) :
 		maxi.append([key, max_value])
 	return maxi
 
-def recognize_video_test(video_input = 1) :
+def recognize_video_test(video_input=1):
 	# construct the argument parser and parse the arguments
 	path = str(pathlib.Path(__file__).parent.absolute())
 	args = {"protoPath" : path +r"\face_detection_model\deploy.prototxt","modelPath" : path+r"\face_detection_model\res10_300x300_ssd_iter_140000.caffemodel", "embedding_model" : path+r"\openface_nn4.small2.v1.t7" , "recognizer" : path+r"\output\recognizer.pickle", "le" : path+r"\output\le.pickle", "confidence" : 0.5}
@@ -113,7 +113,7 @@ def recognize_video_test(video_input = 1) :
 			frame = imutils.resize(frame, width=600)
 		#this most likely means that the video is finish 
 		except AttributeError:	
-			return  return_best_id(best_id_count) , return_best_id(best_id_moy)
+			return  best_id_count , best_id_moy
 
 		(h, w) = frame.shape[:2]
 
@@ -146,63 +146,77 @@ def recognize_video_test(video_input = 1) :
 				# extract the face ROI
 				face = frame[startY:endY, startX:endX]
 				(fH, fW) = face.shape[:2]
-				
 				"""just added""" 
 				objects = ct.update(rects)
-
 				# ensure the face width and height are sufficiently large
 				if fW < 20 or fH < 20:
 					continue
-				
-				# loop over the tracked objects
+
 				for (objectID, centroid) in objects.items():
-					# draw both the ID of the object and the centroid of the
-					# object on the output frame
-					text = "ID {}".format(objectID)
-					cv2.putText(frame, text, (centroid[0] - 10, centroid[1] - 10),
-						cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-					cv2.circle(frame, (centroid[0], centroid[1]), 4, (0, 255, 0), -1)
-
-					# construct a blob for the face ROI, then pass the blob
-					# through our face embedding model to obtain the 128-d
-					# quantification of the face
-					faceBlob = cv2.dnn.blobFromImage(face, 1.0 / 255,
-						(96, 96), (0, 0, 0), swapRB=True, crop=False)
-					embedder.setInput(faceBlob)
-					vec = embedder.forward()
-
-					# perform classification to recognize the face
-					preds = recognizer.predict_proba(vec)[0]
-					j = np.argmax(preds)
-					proba = preds[j]
-					name = le.classes_[j]
-
-					#take the proba of all the faces
-					formatted_preds = [ '%.3f' % elem for elem in preds ]
-					all_preds = dict(zip(le.classes_, formatted_preds))
-					
-					# draw the bounding box of the face along with the
-					# associated probability
-					text = "{}: {:.2f}%".format(name, proba * 100)
-					y = startY - 10 if startY - 10 > 10 else startY + 10
-					cv2.rectangle(frame, (startX, startY), (endX, endY),
-						(0, 0, 255), 2)
-					cv2.putText(frame, text, (startX, y),
-						cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 0, 255), 2)
-
-					try :
-						best_id_count[objectID][name] = best_id_count[objectID][name] + 1
-					except KeyError:
-						try:
-							best_id_count[objectID][name] = 1
-						except KeyError :
-							best_id_count[objectID] = {}
-							best_id_count[objectID][name] = 1
-					if objectID in best_id_moy:
-						best_id_moy[objectID] = {k:  round((float(best_id_moy[objectID][k]) * (sum(best_id_count[objectID].values())-1) + float(all_preds[k]))/sum(best_id_count[objectID].values()),3) for k in all_preds}
-					else :
-						best_id_moy[objectID] = all_preds
+					this_centroid = np.array([int(abs(startX - endX) / 2 + startX), int(abs(startY - endY) / 2 + startY)])
+					if centroid[0] == this_centroid[0] and centroid[1] == this_centroid[1]:
+						test = objectID
+					else:
+						continue
 						
+
+				# construct a blob for the face ROI, then pass the blob
+				# through our face embedding model to obtain the 128-d
+				# quantification of the face
+				faceBlob = cv2.dnn.blobFromImage(face, 1.0 / 255,
+					(96, 96), (0, 0, 0), swapRB=True, crop=False)
+				embedder.setInput(faceBlob)
+				vec = embedder.forward()
+
+				# perform classification to recognize the face
+				preds = recognizer.predict_proba(vec)[0]
+				j = np.argmax(preds)
+				#best recognize
+				proba = preds[j]
+				name = le.classes_[j]
+
+				#take the proba of all the faces
+				formatted_preds = [ '%.3f' % elem for elem in preds ]
+				all_preds = dict(zip(le.classes_, formatted_preds))
+				
+				# draw the bounding box of the face along with the
+				# associated probability
+				text = "{}: {:.2f}%".format(name, proba * 100)
+				y = startY - 10 if startY - 10 > 10 else startY + 10
+				cv2.rectangle(frame, (startX, startY), (endX, endY),
+					(0, 0, 255), 2)
+				cv2.putText(frame, text, (startX, y),
+					cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 0, 255), 2)
+
+
+				try :
+					best_id_count[test][name] = best_id_count[test][name] + 1
+				except KeyError:
+					try:	
+						best_id_count[test][name] = 1
+						#print('first time name',_id)
+					except KeyError:
+						best_id_count[test] = {}
+						best_id_count[test][name] = 1
+						#print('first time see this id',_id)
+				if test in best_id_moy:
+					#print('moy',_id)
+					best_id_moy[test] = {k:  round((float(best_id_moy[test][k]) * (sum(best_id_count[test].values())-1) + float(all_preds[k]))/sum(best_id_count[test].values()),3) for k in all_preds}
+				else:
+					#print('first time moy',_id)
+					best_id_moy[test] = all_preds
+
+
+
+		# loop over the tracked objects
+			for (objectID, centroid) in objects.items():
+				# draw both the ID of the object and the centroid of the
+				# object on the output frame
+				text = "ID {}".format(objectID)
+				cv2.putText(frame, text, (centroid[0] - 10, centroid[1] - 10),
+					cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+				cv2.circle(frame, (centroid[0], centroid[1]), 4, (0, 255, 0), -1)
+					
 
 		# update the FPS counter
 		fps.update()
@@ -228,7 +242,8 @@ def recognize_video_test(video_input = 1) :
 		vs.stop()
 
 if __name__ == "__main__":
-	best_id_count, best_id_moy = recognize_video_test()
+	#953
+	best_id_count, best_id_moy = recognize_video_test(r"C:\Users\utilisateur\Desktop\xvkogaqmqz.avi")
 	print(best_id_count, best_id_moy)
 
 

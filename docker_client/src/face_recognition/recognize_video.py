@@ -23,15 +23,17 @@ def return_best_id(dic) :
 		maxi.append([key, max_value])
 	return maxi
 
-def recognize_video(video_input = 1) :
+def recognize_video(video_input) :
 	# construct the argument parser and parse the arguments
 	path = str(pathlib.Path(__file__).parent.absolute())
-	args = {"protoPath" : path +"/face_detection_model/deploy.prototxt","modelPath" : path+r"/face_detection_model/res10_300x300_ssd_iter_140000.caffemodel", "embedding_model" : path+r"/openface_nn4.small2.v1.t7" , "recognizer" : path+r"/output/recognizer.pickle", "le" : path+r"/output/le.pickle", "confidence" : 0.5}
+	args = {"protoPath" : path +r"\face_detection_model\deploy.prototxt","modelPath" : path+r"\face_detection_model\res10_300x300_ssd_iter_140000.caffemodel", "embedding_model" : path+r"\openface_nn4.small2.v1.t7" , "recognizer" : path+r"\output\recognizer.pickle", "le" : path+r"\output\le.pickle", "confidence" : 0.5}
 	
 	# initialize our centroid tracker and frame dimensions
 	ct = CentroidTracker()
 
 	# load our serialized face detector from disk
+	#protoPath = os.path.sep.join([args["detector"], "deploy.prototxt"])
+	#modelPath = os.path.sep.join([args["detector"],"res10_300x300_ssd_iter_140000.caffemodel"])
 	detector = cv2.dnn.readNetFromCaffe(args["protoPath"], args["modelPath"])
 
 	# load our serialized face embedding model from disk
@@ -45,9 +47,11 @@ def recognize_video(video_input = 1) :
 	# all info extracted from video
 	best_id_count = {}
 	best_id_moy = {}
+
 	
 	# loop over frames from the video file stream
 	while True:
+
 		# grab the frame from the video data send to me
 		_, frame = cap.read()
 
@@ -58,8 +62,10 @@ def recognize_video(video_input = 1) :
 			frame = imutils.resize(frame, width=600)
 		#this most likely means that the video is finish 
 		except AttributeError:	
-			return  return_best_id(best_id_count) , return_best_id(best_id_moy)
+			return  best_id_count , best_id_moy
+
 		(h, w) = frame.shape[:2]
+
 		# construct a blob from the image
 		imageBlob = cv2.dnn.blobFromImage(
 			cv2.resize(frame, (300, 300)), 1.0, (300, 300),
@@ -70,7 +76,6 @@ def recognize_video(video_input = 1) :
 		detector.setInput(imageBlob)
 		detections = detector.forward()
 		rects = []
-
 		# loop over the detections
 		for i in range(0, detections.shape[2]):
 			# extract the confidence (i.e., probability) associated with
@@ -90,45 +95,59 @@ def recognize_video(video_input = 1) :
 				# extract the face ROI
 				face = frame[startY:endY, startX:endX]
 				(fH, fW) = face.shape[:2]
-				
 				"""just added""" 
 				objects = ct.update(rects)
+				# ensure the face width and height are sufficiently large
+				if fW < 20 or fH < 20:
+					continue
 
-				# loop over the tracked objects
 				for (objectID, centroid) in objects.items():
+					this_centroid = np.array([int(abs(startX - endX) / 2 + startX), int(abs(startY - endY) / 2 + startY)])
+					if centroid[0] == this_centroid[0] and centroid[1] == this_centroid[1]:
+						test = objectID
+					else:
+						continue
+						
 
-					# construct a blob for the face ROI, then pass the blob
-					# through our face embedding model to obtain the 128-d
-					# quantification of the face
-					faceBlob = cv2.dnn.blobFromImage(face, 1.0 / 255,
-						(96, 96), (0, 0, 0), swapRB=True, crop=False)
-					embedder.setInput(faceBlob)
-					vec = embedder.forward()
+				# construct a blob for the face ROI, then pass the blob
+				# through our face embedding model to obtain the 128-d
+				# quantification of the face
+				faceBlob = cv2.dnn.blobFromImage(face, 1.0 / 255,
+					(96, 96), (0, 0, 0), swapRB=True, crop=False)
+				embedder.setInput(faceBlob)
+				vec = embedder.forward()
 
-					# perform classification to recognize the face
-					preds = recognizer.predict_proba(vec)[0]
-					j = np.argmax(preds)
-					proba = preds[j]
-					name = le.classes_[j]
+				# perform classification to recognize the face
+				preds = recognizer.predict_proba(vec)[0]
+				j = np.argmax(preds)
+				#best recognize
+				proba = preds[j]
+				name = le.classes_[j]
 
-					#take the proba of all the faces
-					formatted_preds = [ '%.3f' % elem for elem in preds ]
-					all_preds = dict(zip(le.classes_, formatted_preds))
-					
-					try :
-						best_id_count[objectID][name] = best_id_count[objectID][name] + 1
+				#take the proba of all the faces
+				formatted_preds = [ '%.3f' % elem for elem in preds ]
+				all_preds = dict(zip(le.classes_, formatted_preds))
+				
+
+
+				try :
+					best_id_count[test][name] = best_id_count[test][name] + 1
+				except KeyError:
+					try:	
+						best_id_count[test][name] = 1
+						#print('first time name',_id)
 					except KeyError:
-						try:
-							best_id_count[objectID][name] = 1
-						except KeyError :
-							best_id_count[objectID] = {}
-							best_id_count[objectID][name] = 1
-					if objectID in best_id_moy:
-						best_id_moy[objectID] = {k:  round((float(best_id_moy[objectID][k]) * (sum(best_id_count[objectID].values())-1) + float(all_preds[k]))/sum(best_id_count[objectID].values()),3) for k in all_preds}
-					else :
-						best_id_moy[objectID] = all_preds
+						best_id_count[test] = {}
+						best_id_count[test][name] = 1
+						#print('first time see this id',_id)
+				if test in best_id_moy:
+					#print('moy',_id)
+					best_id_moy[test] = {k:  round((float(best_id_moy[test][k]) * (sum(best_id_count[test].values())-1) + float(all_preds[k]))/sum(best_id_count[test].values()),3) for k in all_preds}
+				else:
+					#print('first time moy',_id)
+					best_id_moy[test] = all_preds
 
 if __name__ == "__main__":
 	path = str(pathlib.Path(__file__).parent.absolute())
-	best_id_count, best_id_moy = recognize_video(video_input = path + r"\images\video_matthew.mp4")
+	best_id_count, best_id_moy = recognize_video(r"C:\Users\utilisateur\Desktop\xvkogaqmqz.avi")
 	print(best_id_count, best_id_moy)
