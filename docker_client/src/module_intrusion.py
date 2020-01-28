@@ -12,6 +12,7 @@ from system_mode_manager import SystemModeManager
 from face_recognition.surveillance_class import FaceDetection
 import sklearn
 import os
+from github_pusher import GithubPusher
 class IntrusionDetector:
     def __init__(self):
         print("sklearn.__version__", sklearn.__version__)
@@ -24,6 +25,7 @@ class IntrusionDetector:
         self.systemModeManager = SystemModeManager()
         self.faceDetection = FaceDetection()
         self.azureUploaderFiles = AzureUploaderFiles()
+        self.githubPusher = GithubPusher()
         
     def my_callback(self, channel): #Fonction appelé dès lors détection d'un mouvement
         print('Mouvement detecte') #Affichage dans le terminal
@@ -43,23 +45,25 @@ class IntrusionDetector:
 
         #UPLOAD video
         print("faces detection...")
-        users_list = self.faceDetection.run_video(video_recorder_file)
-        print(users_list)
+        #users_list = self.faceDetection.run_video(video_recorder_file)
+        #print(users_list)
         #break
-        return 0
+        #return 0
         users_list = ["inconnu"]
         seperator = ', '
         users_list_str = seperator.join(users_list)
 
         print("adding intrusion on databse...")
         result =  self.surveillanceDbAPI.add_new_intrusion("Intrusion", "-", users_list_str, "-")
-            #print("_id :", result.inserted_id)
-            #self.systemModeManager.set_system_mode(EnumModules.CONTROLLER)
+        #print("_id :", result.inserted_id)
+        #self.systemModeManager.set_system_mode(EnumModules.CONTROLLER)
 
         print("uploading to azure storage...")
         azure_file_name = "videos/{0}.avi".format(result.inserted_id)
         os.rename(video_recorder_file,azure_file_name)
-        self.azureUploaderFiles.upload(azure_file_name)
+        #self.azureUploaderFiles.upload(azure_file_name)
+        print("push to github")
+        self.githubPusher.push(azure_file_name)
 
         print("wait 20 minutes before continue checking")
         time.sleep(1200)
