@@ -15,6 +15,7 @@ import sys, traceback
 from identify_file import IdentifyFile
 from command_module_mapper import CommandModuleMapper
 import time
+from photo_captor import PhotoCaptor
 class RobotTrigger:
     def __init__(self):
         self.trigger = "robot"
@@ -26,10 +27,14 @@ class RobotTrigger:
         self.surveillanceDb = SurveillanceDbAPI()
         self.identifyFile = IdentifyFile()
         self.commandModuleMapper = CommandModuleMapper()
+        self.photoCaptor = PhotoCaptor()
         self.files_to_delete = []
         self.empty_profile_id = "00000000-0000-0000-0000-000000000000"
         self.subscription_key = "b4736e77574f48fe802b55364a2b2e44"
         self.force_listen = False
+        
+        
+        
 
     def clean_temp_files(self):
         #delete recorded wave file
@@ -63,8 +68,13 @@ class RobotTrigger:
             print("Could not understand audio")
         return ""
 
-
+    
     def listen(self):
+        print("initialization...")
+        self.photoCaptor.run()
+        
+        
+        
         print("Trying to always listen...")
         
         while True:

@@ -1,1 +1,0 @@
-Error opening InputStream: Device unavailable [PaErrorCode -9985]

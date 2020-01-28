@@ -11,6 +11,7 @@ from storage_api.azure_uploader_files import AzureUploaderFiles
 from system_mode_manager import SystemModeManager
 from face_recognition.surveillance_class import FaceDetection
 import sklearn
+import os
 class IntrusionDetector:
     def __init__(self):
         print("sklearn.__version__", sklearn.__version__)
