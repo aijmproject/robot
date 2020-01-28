@@ -1,9 +1,12 @@
 import os
 class GithubPusher:
-    #def __init__(self):
-    
-    def push(self, file):
+    def __init__(self):
+        self.username = "KIBASSA"
+        self.password = "Justforgithub130589_"
+        self.repo = "aijmproject/robot.git"
         
+    def push(self, file):
+        os.system("git config remote.origin.url https://{0}:{1}@github.com/{2}".format(self.username, self.password,self.repo))
         print("pull")
         os.system("git pull")
         print("add file...")

@@ -32,7 +32,7 @@ class IntrusionDetector:
         #date = datetime.datetime.now() #Récupération de la date et de l'heure actuelle
         #print(date.strftime("%d-%m-%Y %H:%M:%S")) #Affichage de la date et l'heure du mouvement
         
-        dir_path = "videos/"
+        dir_path = "intrusion_videos/"
         if not os.path.exists(dir_path):
             os.makedirs(dir_path)
             print("videos folder created")
@@ -45,9 +45,9 @@ class IntrusionDetector:
 
         #UPLOAD video
         print("faces detection...")
-        #users_list = self.faceDetection.run_video(video_recorder_file)
-        #print(users_list)
-        #break
+        users_list = self.faceDetection.run_video(video_recorder_file)
+        print(users_list)
+        
         #return 0
         users_list = ["inconnu"]
         seperator = ', '
@@ -59,7 +59,7 @@ class IntrusionDetector:
         #self.systemModeManager.set_system_mode(EnumModules.CONTROLLER)
 
         print("uploading to azure storage...")
-        azure_file_name = "videos/{0}.avi".format(result.inserted_id)
+        azure_file_name = "{0}{1}.avi".format(dir_path, result.inserted_id)
         os.rename(video_recorder_file,azure_file_name)
         #self.azureUploaderFiles.upload(azure_file_name)
         print("push to github")
@@ -70,7 +70,7 @@ class IntrusionDetector:
         
 
     def check(self):
-        time.sleep(4)
+        #time.sleep(4)
         gpio = 7
         
         self.GPIO.setmode(self.GPIO.BCM)
@@ -80,7 +80,7 @@ class IntrusionDetector:
         try:
             self.GPIO.add_event_detect(gpio , self.GPIO.RISING, callback=self.my_callback) #Essaye de détecter un événement (mouvement) sur le pin, s'il y a une impultion électrique alors on appelle la fonction my_callback
             while True:
-                time.sleep(100)
+                time.sleep(10)
         except KeyboardInterrupt:
             print ("Finish...") #Affiche dès lors du "crt+C"
         self.GPIO.cleanup()
