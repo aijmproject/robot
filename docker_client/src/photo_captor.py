@@ -14,12 +14,17 @@ class PhotoCaptor:
         self.azureUploaderFiles = AzureUploaderFiles()
         self.sched = sched.scheduler(time.time, time.sleep)
         self.githubPusher = GithubPusher()
+        self.init_ = -1
         
     def run(self):
-        self.sched.enter(30, 30, self.tick, (self.sched,))
+        self.sched.enter(1, 1, self.tick, (self.sched,))
         self.sched.run()
         
     def tick(self,sched):
+        self.init_ = self.init_ + 1
+        if self.init_ == 0:
+            return 
+        
         current_mode = self.systemModeManager.get_current_mode()
         current_mode = 1
 
