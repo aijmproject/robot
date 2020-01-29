@@ -30,7 +30,7 @@ class PhotoCaptor:
         if current_mode == 3:
             return
         
-        file_name = "snapshot.jpg"
+        file_name = os.path.join(dir_path, "snapshot.jpg")
         
         print("video capture... ")
         vidcap = cv2.VideoCapture(-1)

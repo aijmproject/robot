@@ -15,7 +15,6 @@ import os
 from github_pusher import GithubPusher
 class IntrusionDetector:
     def __init__(self):
-        print("sklearn.__version__", sklearn.__version__)
         # GPIO module, dynamically loaded depending on config
         self.GPIO = GPIO
         self.videoRecorder = VideoRecorder()
@@ -70,7 +69,6 @@ class IntrusionDetector:
         
 
     def check(self):
-        #time.sleep(4)
         gpio = 7
         
         self.GPIO.setmode(self.GPIO.BCM)
@@ -86,29 +84,6 @@ class IntrusionDetector:
         self.GPIO.cleanup()
         return 0
     
-        #while True:
-        #    pir = self.GPIO.input(gpio)
-        #    print("pir :", pir)
-        #    if pir == 1:
-        #        # no motion detected
-        #        time.sleep(1)
-        #        print("time.sleep(1)")
-        #        continue gpio = 7
-            
-            
-            #break
-
-            #self.logger.info('PIR: motion detected')
-            #if self.config['buzzer']['enable'] and len(buzzer_sequence) > 0:
-            #    self.playSequence(buzzer_sequence)
-            #args = shlex.split(self.config['pir']['capture_cmd'])
-
-            #try:
-            #    subprocess.call(args)
-            #except Exception as e:
-            #    self.logger.warn(str(e))
-            #    self.logger.warn(traceback.format_exc())
-            #    message.reply_text('Error: Capture failed: %s' % str(e))
 if __name__ == "__main__":
     app  = IntrusionDetector()
     print("check...")
