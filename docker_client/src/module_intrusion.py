@@ -13,6 +13,9 @@ from face_recognition.surveillance_class import FaceDetection
 import sklearn
 import os
 from github_pusher import GithubPusher
+from result_recognizer import ResultUsersRecognizer
+from module_text_to_speech import TextToSpeech
+from response_random_provider import ResponseRandomProvider
 class IntrusionDetector:
     def __init__(self):
         # GPIO module, dynamically loaded depending on config
@@ -25,7 +28,10 @@ class IntrusionDetector:
         self.faceDetection = FaceDetection()
         self.azureUploaderFiles = AzureUploaderFiles()
         self.githubPusher = GithubPusher()
-        
+        self.usersRecognizer = ResultUsersRecognizer()
+        self.textToSpeech = TextToSpeech()
+        self.responseRandomProvider = ResponseRandomProvider()
+    
     def my_callback(self, channel): #Fonction appelé dès lors détection d'un mouvement
         print('Mouvement detecte') #Affichage dans le terminal
         #date = datetime.datetime.now() #Récupération de la date et de l'heure actuelle
@@ -36,7 +42,7 @@ class IntrusionDetector:
             os.makedirs(dir_path)
             print("videos folder created")
         
-        video_recorder_file = "videos/" + GlobalUtils.randomString() + ".avi"
+        video_recorder_file = dir_path + GlobalUtils.randomString() + ".avi"
         #video_recorder_file = "videos/aqcenzraeh.avi"
         #record for 1 minutes
         print("recording video...")
@@ -45,10 +51,12 @@ class IntrusionDetector:
         #UPLOAD video
         print("faces detection...")
         users_list = self.faceDetection.run_video(video_recorder_file)
-        print(users_list)
-        
-        #return 0
-        users_list = ["inconnu"]
+        code_result,users_list = self.usersRecognizer.get_recognized_result(users_list)
+        if code_result == 3:
+            self.textToSpeech.speak(self.responseRandomProvider.get_intrusion_and_reidentification())
+            #call reidentification video method
+            #todo
+            
         seperator = ', '
         users_list_str = seperator.join(users_list)
 
