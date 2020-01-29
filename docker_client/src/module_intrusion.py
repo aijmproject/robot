@@ -22,7 +22,6 @@ class IntrusionDetector:
         self.GPIO = GPIO
         self.videoRecorder = VideoRecorder()
         self.facesDetectorMoc = FacesDetectorMoc()
-        #self.sceneDescriptorMoc = SceneDescriptorMoc()
         self.surveillanceDbAPI = SurveillanceDbAPI()
         self.systemModeManager = SystemModeManager()
         self.faceDetection = FaceDetection()
@@ -32,10 +31,9 @@ class IntrusionDetector:
         self.textToSpeech = TextToSpeech()
         self.responseRandomProvider = ResponseRandomProvider()
     
-    def my_callback(self, channel): #Fonction appelé dès lors détection d'un mouvement
-        print('Mouvement detecte') #Affichage dans le terminal
-        #date = datetime.datetime.now() #Récupération de la date et de l'heure actuelle
-        #print(date.strftime("%d-%m-%Y %H:%M:%S")) #Affichage de la date et l'heure du mouvement
+    #Fonction appelé dès lors détection d'un mouvement
+    def my_callback(self, channel): 
+        print('Mouvement detecte')
         
         dir_path = "intrusion_videos/"
         if not os.path.exists(dir_path):
@@ -50,8 +48,9 @@ class IntrusionDetector:
 
         #UPLOAD video
         print("faces detection...")
-        users_list = self.faceDetection.run_video(video_recorder_file)
-        code_result,users_list = self.usersRecognizer.get_recognized_result(users_list)
+        _, reco_result = self.faceDetection.run_video(video_recorder_file)
+        print("reco_result: ",type(reco_result)) 
+        code_result,users_list = self.usersRecognizer.get_recognized_result(reco_result)
         if code_result == 3:
             self.textToSpeech.speak(self.responseRandomProvider.get_intrusion_and_reidentification())
             #call reidentification video method
@@ -60,7 +59,7 @@ class IntrusionDetector:
         seperator = ', '
         users_list_str = seperator.join(users_list)
 
-        print("adding intrusion on databse...")
+        print("adding intrusion on databsae...")
         result =  self.surveillanceDbAPI.add_new_intrusion("Intrusion", "-", users_list_str, "-")
         #print("_id :", result.inserted_id)
         #self.systemModeManager.set_system_mode(EnumModules.CONTROLLER)
@@ -72,8 +71,10 @@ class IntrusionDetector:
         print("push to github")
         self.githubPusher.push(azure_file_name)
 
-        print("wait 20 minutes before continue checking")
-        time.sleep(1200)
+        #print("wait 20 minutes before continue checking")
+        #time.sleep(1200)
+        
+        self.GPIO.cleanup()
         
 
     def check(self):
@@ -90,7 +91,7 @@ class IntrusionDetector:
         except KeyboardInterrupt:
             print ("Finish...") #Affiche dès lors du "crt+C"
         self.GPIO.cleanup()
-        return 0
+        return
     
 if __name__ == "__main__":
     app  = IntrusionDetector()

@@ -27,6 +27,16 @@ class BabyCryDetectorMoc():
                     time.sleep(10)
             except Exception as e:
                 print(e)
+                #File "robot_trigger.py", line 93, in _listen_command
+                #with speech_recognition.Microphone() as source:
+                #File "/usr/local/lib/python3.7/dist-packages/speech_recognition/__init__.py", line 141, in __enter__
+                #input=True,  # stream is an input stream
+                #File "/usr/lib/python3/dist-packages/pyaudio.py", line 750, in open
+                #stream = Stream(self, *args, **kwargs)
+                #File "/usr/lib/python3/dist-packages/pyaudio.py", line 441, in __init__
+                #self._stream = pa.open(**arguments)
+                #OSError: [Errno -9985] Device unavailable
+
         
             
 if __name__ == "__main__":
