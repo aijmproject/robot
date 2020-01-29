@@ -35,11 +35,8 @@ class RobotTrigger:
         
         
         
-
+    #nettoyage des tous les fichers temporaires créer durant l'intéraction
     def clean_temp_files(self):
-        #delete recorded wave file
-        #https://stackoverflow.com/questions/1196074/how-to-start-a-background-process-in-python
-        #execuyte this in background process
         for file in self.files_to_delete:
             if os.path.isfile(file):
                 os.remove(file)
