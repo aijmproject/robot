@@ -1,6 +1,4 @@
 import azure.cognitiveservices.speech as speechsdk
-
-
 class SpeechToText:
     def __init__(self):
         self.speech_key = "7312fdabc95d4f61b94408d74612f4ea"
@@ -32,7 +30,12 @@ class SpeechToText:
             if cancellation_details.reason == speechsdk.CancellationReason.Error:
                 print("Error details: {}".format(cancellation_details.error_details))
         
-        return text_result
+        #post processing
+        
+        if text_result.endswith(".") or text_result.endswith("?"):
+            text_result = text_result[:-1]
+
+        return text_result.lower()
 
 if __name__ == "__main__":
     app = SpeechToText()

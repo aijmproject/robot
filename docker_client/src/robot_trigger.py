@@ -16,6 +16,7 @@ from identify_file import IdentifyFile
 from command_module_mapper import CommandModuleMapper
 import time
 from photo_captor import PhotoCaptor
+from module_speech_recognition import SpeechToText
 class RobotTrigger:
     def __init__(self):
         self.trigger = "robot"
@@ -28,6 +29,7 @@ class RobotTrigger:
         self.identifyFile = IdentifyFile()
         self.commandModuleMapper = CommandModuleMapper()
         self.photoCaptor = PhotoCaptor()
+        self.speechToText = SpeechToText()
         self.files_to_delete = []
         self.empty_profile_id = "00000000-0000-0recognize000-0000-000000000000"
         self.subscription_key = "b4736e77574f48fe802b55364a2b2e44"
@@ -49,29 +51,29 @@ class RobotTrigger:
         if self.force_listen == True:
             return self.trigger
 
-        print("Beginning to listen...")
-        with speech_recognition.Microphone() as source:
-                    #print("step 1")
-                    self.recognizer.adjust_for_ambient_noise(source)
-                    print("Parler...")
-                    audio = self.recognizer.listen(source)
-                    print("Fin de l'écoute!")
+        print("Parler...")
 
-        try:
-            start = time.perf_counter()
-            result = self.recognizer.recognize_bing(audio, language="fr-FR",key=self.subscription_key_speech)
-            print(time.perf_counter()-start, " seconds ")
-            return result
-        except speech_recognition.UnknownValueError:
-            print("Could not understand audio")
-        return ""
+        return self.speechToText.get_text()
+        #with speech_recognition.Microphone() as source:
+        #            #print("step 1")
+        #            self.recognizer.adjust_for_ambient_noise(source)
+        #            print("Parler...")
+        #            audio = self.recognizer.listen(source)
+        #            print("Fin de l'écoute!")
+
+        #try:
+        #    start = time.perf_counter()
+        #    result = self.recognizer.recognize_bing(audio, language="fr-FR",key=self.subscription_key_speech)
+        #    print(time.perf_counter()-start, " seconds ")
+        #    return result
+        #except speech_recognition.UnknownValueError:
+        #    print("Could not understand audio")
+        #return ""
 
     
     def listen(self):
         print("initialization...")
         self.photoCaptor.run()
-        
-        
         
         print("Trying to always listen...")
         
@@ -87,34 +89,36 @@ class RobotTrigger:
             if self.force_listen == False:
                 self.textToSpeech.speak(self.reponseRandomProvider.bot_ask_to_speak())
 
-            voice_recorder_file = GlobalUtils.randomString() + ".wav"
-            self.files_to_delete.append(voice_recorder_file)
+            #voice_recorder_file = GlobalUtils.randomString() + ".wav"
+            #self.files_to_delete.append(voice_recorder_file)
 
             print("listen to input command...")
-            with speech_recognition.Microphone() as source:
-                        self.recognizer.adjust_for_ambient_noise(source)
-                        print("Parler...")
-                        audio2 = self.recognizer.listen(source)
-                        print("Fin de l'écoute!")
-                        with open(voice_recorder_file, "wb") as f:
-                            f.write(audio2.get_wav_data())
+            #with speech_recognition.Microphone() as source:
+            #            self.recognizer.adjust_for_ambient_noise(source)
+            #            print("Parler...")
+            #            audio2 = self.recognizer.listen(source)
+            #            print("Fin de l'écoute!")
+            #            with open(voice_recorder_file, "wb") as f:
+            #                f.write(audio2.get_wav_data())
                         
-            command_text = ""
-            try:
-                start = time.perf_counter()
-                command_text =  self.recognizer.recognize_bing(audio2, language="fr-FR", key=self.subscription_key_speech)
-                print(time.perf_counter()-start, " seconds ")
-                print("sentence : ", command_text)
-            except speech_recognition.UnknownValueError:
-                print("Could not understand audio")
+            #command_text = ""
+            #try:
+            #    start = time.perf_counter()
+            #    command_text =  self.recognizer.recognize_bing(audio2, language="fr-FR", key=self.subscription_key_speech)
+            #    print(time.perf_counter()-start, " seconds ")
+            #    print("sentence : ", command_text)
+            #except speech_recognition.UnknownValueError:
+            #    print("Could not understand audio")
             
+            command_text = self.speechToText.get_text()
+
             command_code = self.command_mapper.get_code_by_text(command_text)
             if command_code == -1:
                 self.textToSpeech.speak(self.reponseRandomProvider.not_undestand_command())
                 self.force_listen = True
             else:
-                voice_recorder_file_16k = AudioFileConvertor.convert_to_mono_16K(voice_recorder_file)
-                self.files_to_delete.append(voice_recorder_file_16k)
+                #voice_recorder_file_16k = AudioFileConvertor.convert_to_mono_16K(voice_recorder_file)
+                #self.files_to_delete.append(voice_recorder_file_16k)
                 
                 self.textToSpeech.speak("Chargement du module {0}".format(self.commandModuleMapper.code_to_module[command_code]))
                 self.moduleManager.switch_to_module(command_code)
