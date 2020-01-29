@@ -23,7 +23,6 @@ class BabyCryPredictor():
     """
     Class to classify a new audio signal and determine if it's a baby cry
     """
-
     def __init__(self, path_dir):
         self.path_dir = path_dir
         self.filepath = self.path_dir + '/trained_model/cnn_baby.hdf5'
@@ -41,7 +40,9 @@ class BabyCryPredictor():
         print('stop')
         
         x = np.squeeze(x)
+        self.x = x
         write(self.path_dir + '/temp/record.wav', fs, x)
+        write(self.path_dir + '/temp1/record.wav', fs, x)
         
     def create_spectrogram(self):
        
@@ -84,26 +85,37 @@ class BabyCryPredictor():
         
     
     def predict(self):
-        self.reader()
-        self.create_spectrogram()
         
-        test_image = image.load_img(self.image_path, target_size = (64, 64))
-        test_image = image.img_to_array(test_image)
-        test_image = np.expand_dims(test_image, axis = 0)
-        cnn_model = self.model()
-        cnn_model.load_weights(self.filepath)
-        result = cnn_model.predict(test_image)
-        #training_set.class_indices
-        if result[0][0] == 1:
+        self.reader()
+        somme = 0 
+        for i in self.x:
+            somme = abs(i) + somme
+        if somme < 2000:
             prediction = False
-    
+            return prediction
         else:
-            prediction = True
-        os.remove(self.image_path)
-        os.remove(self.audio_path)
-        return prediction
+            
+            
+            
+            self.create_spectrogram()
+
+            test_image = image.load_img(self.image_path, target_size = (64, 64))
+            test_image = image.img_to_array(test_image)
+            test_image = np.expand_dims(test_image, axis = 0)
+            cnn_model = self.model()
+            cnn_model.load_weights(self.filepath)
+            result = cnn_model.predict(test_image)
+            #training_set.class_indices
+            if result[0][0] == 1:
+                prediction = False
+
+            else:
+                prediction = True
+            os.remove(self.image_path)
+            os.remove(self.audio_path)
+            
+            return prediction
     
 if __name__ == '__main__':
-    app = BabyCryPredictor()
-    app.predict()
+    BabyCryPredictor()
     

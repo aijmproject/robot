@@ -21,7 +21,7 @@ class BabyCryDetectorMoc():
                     self.surveillanceDbAPI.add_new_intrusion("Bébé", "-", "Bébé", "-")
                     print("baby cry loading module....")
                     self.systemModeManager.set_system_mode(EnumModules.CONTROLLER)
-                    break
+                    #break
                     #time.sleep(1200)
                 else:
                     time.sleep(10)

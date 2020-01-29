@@ -29,8 +29,9 @@ class RobotTrigger:
         self.commandModuleMapper = CommandModuleMapper()
         self.photoCaptor = PhotoCaptor()
         self.files_to_delete = []
-        self.empty_profile_id = "00000000-0000-0000-0000-000000000000"
+        self.empty_profile_id = "00000000-0000-0recognize000-0000-000000000000"
         self.subscription_key = "b4736e77574f48fe802b55364a2b2e44"
+        self.subscription_key_speech = "7312fdabc95d4f61b94408d74612f4ea"
         self.force_listen = False
         
         
@@ -58,7 +59,7 @@ class RobotTrigger:
 
         try:
             start = time.perf_counter()
-            result = self.recognizer.recognize_google(audio, language="fr-FR")
+            result = self.recognizer.recognize_bing(audio, language="fr-FR",key=self.subscription_key_speech)
             print(time.perf_counter()-start, " seconds ")
             return result
         except speech_recognition.UnknownValueError:
@@ -101,7 +102,7 @@ class RobotTrigger:
             command_text = ""
             try:
                 start = time.perf_counter()
-                command_text =  self.recognizer.recognize_google(audio2, language="fr-FR")
+                command_text =  self.recognizer.recognize_bing(audio2, language="fr-FR", key=self.subscription_key_speech)
                 print(time.perf_counter()-start, " seconds ")
                 print("sentence : ", command_text)
             except speech_recognition.UnknownValueError:
