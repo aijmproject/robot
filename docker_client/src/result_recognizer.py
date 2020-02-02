@@ -10,6 +10,7 @@ class ResultUsersRecognizer:
         return result
     
     def get_recognized_result(self,input_data):
+        print("input_data :", input_data)
         result = self._get_users_recognized(input_data)
         _inconnu_l = "inconnu"
         if len(result) == 0:

@@ -8,25 +8,25 @@ import cv2
 import time
 import os
 from github_pusher import GithubPusher
+import subprocess
 class PhotoCaptor:
     def __init__(self):
         self.systemModeManager = SystemModeManager()
         self.azureUploaderFiles = AzureUploaderFiles()
-        self.sched = sched.scheduler(time.time, time.sleep)
+        #self.sched = sched.scheduler(time.time, time.sleep)
         self.githubPusher = GithubPusher()
-        self.init_ = -1
+        #self.init_ = -1
         
     def run(self):
-        self.sched.enter(1, 1, self.tick, (self.sched,))
-        self.sched.run()
-        
-    def tick(self,sched):
-        self.init_ = self.init_ + 1
-        if self.init_ == 0:
-            return 
-        
+        while True:
+            try:
+                time.sleep(180) #3 munite
+                self.capt()
+            except Exception as e:
+                print("error :",e)
+            
+    def capt(self):
         current_mode = self.systemModeManager.get_current_mode()
-        current_mode = 1
 
         dir_path = "intrusion_photos/"
         if not os.path.exists(dir_path):
@@ -46,7 +46,7 @@ class PhotoCaptor:
         #self.azureUploaderFiles.upload_photo(file_name)
         print("push to github")
         self.githubPusher.push(file_name)
-        self.sched.enter(30, 30, self.tick, (sched,))
+        #self.sched.enter(30, 30, self.tick, (sched,))
 
 if __name__ == "__main__":
     app  = PhotoCaptor()

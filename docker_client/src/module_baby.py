@@ -5,7 +5,7 @@ from system_mode_manager import SystemModeManager
 from baby_predictor.cry_predictor import BabyCryPredictor
 from system_mode_manager import SystemModeManager
 from enum_modules import EnumModules
-
+import subprocess
 class BabyCryDetectorMoc():
     def __init__(self):
         self.surveillanceDbAPI = SurveillanceDbAPI()
@@ -13,16 +13,26 @@ class BabyCryDetectorMoc():
         self.babyCryPredictor = BabyCryPredictor("baby_predictor/")
 
     def listen(self):
+        
         while True:
             try:
+                
+                #if it's not baby module, quit
+                current_mode = int(self.systemModeManager.get_current_mode())
+                if current_mode != 1:
+                    break
+                #time.sleep(10)
+                #continue
                 pred = self.babyCryPredictor.predict()
                 print("pred:", pred)
                 if pred == True:
-                    self.surveillanceDbAPI.add_new_intrusion("Bébé", "-", "Bébé", "-")
-                    print("baby cry loading module....")
-                    self.systemModeManager.set_system_mode(EnumModules.CONTROLLER)
+                    result = self.surveillanceDbAPI.add_new_intrusion("Bébé", "-", "Bébé", "-")
+                    #print("baby cry loading module....")
+                    #self.systemModeManager.set_system_mode(EnumModules.CONTROLLER)
+                    print("baby_intrusion_id : ", result.inserted_id)
+                    subprocess.Popen(['x-terminal-emulator', '-e', "python3 baby_cry_pusher.py {0}".format(result.inserted_id)])
                     #break
-                    #time.sleep(1200)
+                    time.sleep(1200)
                 else:
                     time.sleep(10)
             except Exception as e:

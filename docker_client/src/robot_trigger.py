@@ -15,8 +15,9 @@ import sys, traceback
 from identify_file import IdentifyFile
 from command_module_mapper import CommandModuleMapper
 import time
-from photo_captor import PhotoCaptor
-from module_speech_recognition import SpeechToText
+#from photo_captor import PhotoCaptor
+import subprocess
+#from module_speech_recognition import SpeechToText
 class RobotTrigger:
     def __init__(self):
         self.trigger = "robot"
@@ -28,14 +29,13 @@ class RobotTrigger:
         self.surveillanceDb = SurveillanceDbAPI()
         self.identifyFile = IdentifyFile()
         self.commandModuleMapper = CommandModuleMapper()
-        self.photoCaptor = PhotoCaptor()
-        self.speechToText = SpeechToText()
+        #self.photoCaptor = PhotoCaptor()
+        #self.speechToText = SpeechToText()
         self.files_to_delete = []
-        self.empty_profile_id = "00000000-0000-0recognize000-0000-000000000000"
+        self.empty_profile_id = "00000000-0000-0000-0000-000000000000"
         self.subscription_key = "b4736e77574f48fe802b55364a2b2e44"
         self.subscription_key_speech = "7312fdabc95d4f61b94408d74612f4ea"
         self.force_listen = False
-        
         
         
     #nettoyage des tous les fichers temporaires créer durant l'intéraction
@@ -53,27 +53,28 @@ class RobotTrigger:
 
         print("Parler...")
 
-        return self.speechToText.get_text()
-        #with speech_recognition.Microphone() as source:
-        #            #print("step 1")
-        #            self.recognizer.adjust_for_ambient_noise(source)
-        #            print("Parler...")
-        #            audio = self.recognizer.listen(source)
-        #            print("Fin de l'écoute!")
+        #return self.speechToText.get_text()
+        with speech_recognition.Microphone() as source:
+                    #print("step 1")
+                    self.recognizer.adjust_for_ambient_noise(source)
+                    print("Parler...")
+                    audio = self.recognizer.listen(source)
+                    print("Fin de l'écoute!")
 
-        #try:
-        #    start = time.perf_counter()
-        #    result = self.recognizer.recognize_bing(audio, language="fr-FR",key=self.subscription_key_speech)
-        #    print(time.perf_counter()-start, " seconds ")
-        #    return result
-        #except speech_recognition.UnknownValueError:
-        #    print("Could not understand audio")
-        #return ""
+        try:
+            start = time.perf_counter()
+            result = self.recognizer.recognize_google(audio, language="fr-FR")
+            print(time.perf_counter()-start, " seconds ")
+            return result
+        except speech_recognition.UnknownValueError:
+            print("Could not understand audio")
+        return ""
 
     
     def listen(self):
         print("initialization...")
-        self.photoCaptor.run()
+        subprocess.Popen(['x-terminal-emulator', '-e', 'python3 photo_captor.py'])
+        #self.photoCaptor.run()
         
         print("Trying to always listen...")
         
@@ -81,7 +82,7 @@ class RobotTrigger:
             result = self._get_trigger()
             if result == self.trigger:
                 self._listen_command()
-            time.sleep(1)
+            time.sleep(2)
 
 
     def _listen_command(self):
@@ -89,28 +90,28 @@ class RobotTrigger:
             if self.force_listen == False:
                 self.textToSpeech.speak(self.reponseRandomProvider.bot_ask_to_speak())
 
-            #voice_recorder_file = GlobalUtils.randomString() + ".wav"
-            #self.files_to_delete.append(voice_recorder_file)
+            voice_recorder_file = GlobalUtils.randomString() + ".wav"
+            self.files_to_delete.append(voice_recorder_file)
 
             print("listen to input command...")
-            #with speech_recognition.Microphone() as source:
-            #            self.recognizer.adjust_for_ambient_noise(source)
-            #            print("Parler...")
-            #            audio2 = self.recognizer.listen(source)
-            #            print("Fin de l'écoute!")
-            #            with open(voice_recorder_file, "wb") as f:
-            #                f.write(audio2.get_wav_data())
+            with speech_recognition.Microphone() as source:
+                        self.recognizer.adjust_for_ambient_noise(source)
+                        print("Parler...")
+                        audio2 = self.recognizer.listen(source)
+                        print("Fin de l'écoute!")
+                        with open(voice_recorder_file, "wb") as f:
+                            f.write(audio2.get_wav_data())
                         
-            #command_text = ""
-            #try:
-            #    start = time.perf_counter()
-            #    command_text =  self.recognizer.recognize_bing(audio2, language="fr-FR", key=self.subscription_key_speech)
-            #    print(time.perf_counter()-start, " seconds ")
-            #    print("sentence : ", command_text)
-            #except speech_recognition.UnknownValueError:
-            #    print("Could not understand audio")
+            command_text = ""
+            try:
+                start = time.perf_counter()
+                command_text =  self.recognizer.recognize_google(audio2, language="fr-FR")
+                print(time.perf_counter()-start, " seconds ")
+                print("sentence : ", command_text)
+            except speech_recognition.UnknownValueError:
+                print("Could not understand audio")
             
-            command_text = self.speechToText.get_text()
+            #command_text = self.speechToText.get_text()
 
             command_code = self.command_mapper.get_code_by_text(command_text)
             if command_code == -1:

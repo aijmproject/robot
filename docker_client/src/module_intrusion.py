@@ -30,10 +30,15 @@ class IntrusionDetector:
         self.usersRecognizer = ResultUsersRecognizer()
         self.textToSpeech = TextToSpeech()
         self.responseRandomProvider = ResponseRandomProvider()
+        
+        self.gpio = 7
+        self.GPIO.setmode(self.GPIO.BCM)
+        
+        self.GPIO.setup(self.gpio, self.GPIO.IN)
     
     #Fonction appelé dès lors détection d'un mouvement
     def my_callback(self, channel): 
-        print('Mouvement detecte')
+        print('Mouvement...')
         
         dir_path = "intrusion_videos/"
         if not os.path.exists(dir_path):
@@ -51,10 +56,16 @@ class IntrusionDetector:
         _, reco_result = self.faceDetection.run_video(video_recorder_file)
         print("reco_result: ",type(reco_result)) 
         code_result,users_list = self.usersRecognizer.get_recognized_result(reco_result)
+        print("users_list :",users_list)
         if code_result == 3:
             self.textToSpeech.speak(self.responseRandomProvider.get_intrusion_and_reidentification())
-            #call reidentification video method
-            #todo
+            video_recorder_file_bis = dir_path + GlobalUtils.randomString() + ".avi"
+            print("recording video...")
+            self.videoRecorder.record(video_recorder_file_bis)
+            print("faces detection...")
+            _, reco_result = self.faceDetection.run_video(video_recorder_file_bis)
+            print("reco_result: ",type(reco_result))
+            code_result,users_list = self.usersRecognizer.get_recognized_result(reco_result)
             
         seperator = ', '
         users_list_str = seperator.join(users_list)
@@ -74,26 +85,36 @@ class IntrusionDetector:
         #print("wait 20 minutes before continue checking")
         #time.sleep(1200)
         
-        self.GPIO.cleanup()
-        
+        #self.GPIO.cleanup()
+        #if it's not intrusion module, quit
+        if int(self.systemModeManager.get_current_mode()) != 2:
+            sys.exit('Exit from intrusion module')
 
     def check(self):
-        gpio = 7
-        
-        self.GPIO.setmode(self.GPIO.BCM)
-        
-        self.GPIO.setup(gpio, self.GPIO.IN)
-        
+        print("une minute avant activation...")
+        time.sleep(60) #wait one minute before check
+        print("Module surveillance activé")
         try:
-            self.GPIO.add_event_detect(gpio , self.GPIO.RISING, callback=self.my_callback) #Essaye de détecter un événement (mouvement) sur le pin, s'il y a une impultion électrique alors on appelle la fonction my_callback
+            self.GPIO.add_event_detect(self.gpio , self.GPIO.RISING, callback=self.my_callback)
+            #Essaye de détecter un événement (mouvement) sur le pin, s'il y a une impultion électrique alors on appelle la fonction my_callback
             while True:
                 time.sleep(10)
+                if self.GPIO.event_detected(self.gpio):
+                    print("mouvement détecté")
+                    self.GPIO.remove_event_detect(self.gpio)
+                    time.sleep(600) #Attendre 10 minutes
+                    print("add_event_detect...")
+                    self.GPIO.add_event_detect(self.gpio , self.GPIO.RISING, callback=self.my_callback)
+                
+                #if it's not intrusion module, quit                
+                if int(self.systemModeManager.get_current_mode()) != 2:
+                    sys.exit('Exit from intrusion module')
+                    
         except KeyboardInterrupt:
             print ("Finish...") #Affiche dès lors du "crt+C"
         self.GPIO.cleanup()
-        return
+        #return
     
 if __name__ == "__main__":
     app  = IntrusionDetector()
-    print("check...")
     app.check()

@@ -15,7 +15,7 @@ class SystemModeManager:
         return self.surveillancedb.get_last_system_mode()["mode"] == self.current_mode
     
     def set_system_mode(self, mode):
-        print("set_system_mode :---", mode)
+        #print("set_system_mode :---", mode)
         self.surveillancedb.update_system_mode(self.local_id, mode)
         self.current_mode = self.surveillancedb.get_last_system_mode()["mode"]
 
