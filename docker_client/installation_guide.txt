@@ -59,3 +59,7 @@ sudo apt-get install libqt4-test
 
 
 pip install azure-cognitiveservices-speech
+
+----------- bluetooth on Raspberry---------
+sudo apt-get install pi-bluetooth
+sudo apt-get install blueman pulseaudio pavucontrol pulseaudio-module-bluetooth
